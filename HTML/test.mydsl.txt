@@ -1,0 +1,5 @@
+Tata
+{
+	installer:toto;
+	children:titi,tutu,trtr;
+}
