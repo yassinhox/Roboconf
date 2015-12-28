@@ -1,5 +1,5 @@
 Tata
 {
 	installer:toto;
-	children:titi,tutu,trtr;
+	children:titi,tutu,trtr;s
 }
