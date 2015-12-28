@@ -20,3 +20,7 @@ III) generator/MyDslGenerator.xtend :
                  qui va représenter le graph écrit en .dsl (notre langage) en JointJS. J'ai crée un dossier HTML dans lequel je vais
                  mettre un fichier qui contient du code .dsl et un HTML qui va être générer automatiquement grâce à ce fichier.
               
+              
+Je me suis inspiré de cette video (il y en a 4 de très intéréssantes) : 
+https://www.youtube.com/watch?v=h9ap54iMqcU
+
