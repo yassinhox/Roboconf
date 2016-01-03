@@ -11,11 +11,11 @@ import org.xtext.example.mydsl.air.ChildrenProperty
 import org.xtext.example.mydsl.air.Component
 import org.xtext.example.mydsl.air.ExportsVariable
 import org.xtext.example.mydsl.air.ExtendsProperty
-import org.xtext.example.mydsl.air.FacetList
 import org.xtext.example.mydsl.air.ImportsVariable
 import org.xtext.example.mydsl.air.InstallerProperty
 import org.xtext.example.mydsl.air.Facet
 import org.xtext.example.mydsl.air.ExportsProperty
+import org.xtext.example.mydsl.air.FacetProperties
 
 /**
  * Generates code from your model files on save.
@@ -231,13 +231,14 @@ class AirGenerator extends AbstractGenerator {
 			    			«xAxis = xAxis+250»
 					«System.out.println(compoProp)»
 					«ENDFOR»
-					«FOR compoProp : compo.eAllContents.filter(FacetList).toIterable»
+					«FOR compoProp : compo.eAllContents.filter(FacetProperties).toIterable»
+						«FOR compoPropp : compoProp.eAllContents.filter(ChildrenProperty).toIterable»
 						«x = x+1»
 						var rect«x» = new joint.shapes.basic.Rect
 						({
 						 	        //position: { x: «xAxis», y: «yAxis» },
 							size: { width: «wid», height: «hei» },
-						 	         attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«compoProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+						 	         attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«compoPropp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
 						});
 						var link = new joint.dia.Link
 						({
@@ -247,7 +248,27 @@ class AirGenerator extends AbstractGenerator {
 						});
 						graph.addCells([rect«y», rect«x», link]);
 						«xAxis = xAxis+250»
-						   «System.out.println(compoProp)»
+						   «System.out.println(compoPropp)»
+						«ENDFOR»
+
+						«FOR compoProppp : compoProp.eAllContents.filter(ExportsVariable).toIterable»
+						«x = x+1»
+						var rect«x» = new joint.shapes.basic.Rect
+						({
+						 	        //position: { x: «xAxis», y: «yAxis» },
+							size: { width: «wid», height: «hei» },
+						 	         attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«compoProppp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+						});
+						var link = new joint.dia.Link
+						({
+							 router: { name: 'manhattan' },
+						        source: { id: rect«y».id },
+						        target: { id: rect«x».id }
+						});
+						graph.addCells([rect«y», rect«x», link]);
+						«xAxis = xAxis+250»
+						   «System.out.println(compoProppp)»
+						«ENDFOR»
 					«ENDFOR»
 					«FOR compoProp : compo.eAllContents.filter(ExtendsProperty).toIterable»
 						«x = x+1»
