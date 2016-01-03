@@ -17,7 +17,7 @@ II) validation/MyDslValidator.xtend :
                  y en a tout de même un très simple.
 
 III) generator/MyDslGenerator.xtend :
-            fichier qui permet de generer le graph en html, je le push demain
+            fichier qui permet de generer le graph en html, je le push mais j'y travaille encore, j'ai mis un screen pour avoir un apercu ;) (Lina)
               
               
 Je me suis inspiré de cette video (il y en a 4 de très intéréssantes) : 
