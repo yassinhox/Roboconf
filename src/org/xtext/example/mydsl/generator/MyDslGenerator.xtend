@@ -16,6 +16,13 @@ import org.xtext.example.mydsl.air.InstallerProperty
 import org.xtext.example.mydsl.air.Facet
 import org.xtext.example.mydsl.air.ExportsProperty
 import org.xtext.example.mydsl.air.FacetProperties
+import org.xtext.example.mydsl.air.Instance
+import org.xtext.example.mydsl.air.NameProperty
+import org.xtext.example.mydsl.air.CountProperty
+import org.xtext.example.mydsl.air.ChannelsProperty
+import org.xtext.example.mydsl.air.InstanceDataProperty
+import org.xtext.example.mydsl.air.InstanceStateProperty
+import org.xtext.example.mydsl.air.CompositionProperty
 
 /**
  * Generates code from your model files on save.
@@ -47,13 +54,51 @@ class AirGenerator extends AbstractGenerator {
 					<script type="text/javascript" src="http://jointjs.com/js/vendor/graphlib/dist/graphlib.core.js"></script>
 					<script type="text/javascript" src="http://jointjs.com/js/vendor/dagre/dist/dagre.core.js"></script>
 					<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jointjs/0.9.7/joint.layout.DirectedGraph.min.js"></script>
+			   		<link rel="stylesheet" type="text/css" href="joint.ui.tooltip.css" />
+			   		<script src="joint.ui.tooltip.js"></script>
+			   <style>
+			   table, td {
+			       border: 1px solid black;
+			   }
+			   </style>
 			    </head>
 			
 			    <body>
-			      <div id="paper"></div>
+			       
+			       <table>
+			       	<tr>
+			       		<td BGCOLOR="#74D0F1">_</td>
+			       		<td>Facet</td>
+			       	</tr>
+			        <tr>
+			       		<td BGCOLOR="#9683EC">_</td>
+			       		<td>Facet properties</td>
+			       </tr>
+			       <tr>
+			       		<td BGCOLOR="#FF5E4D">_</td>
+			       		<td>Component</td>
+			       </tr>
+			       <tr>
+			       		<td BGCOLOR="#FFCB60">_</td>
+			       		<td>Component properties</td>
+			       </tr>
+			       <tr>
+			       		<td BGCOLOR="#AD4F09">_</td>
+			       		<td>Instance</td>
+			       </tr>
+			       <tr>
+			       		<td BGCOLOR="#F88E55">_</td>
+			       		<td>Instances properties</td>
+			       </tr>
+			       			      			         
+			       </table>
+			         <div id="paper"></div>
 			      <script type="text/javascript">
 			
 			        var graph = new joint.dia.Graph;
+			        
+			        var tab = new Object()
+			        var tabI = new Object()
 			
 			        var paper = new joint.dia.Paper
 			        ({
@@ -115,6 +160,12 @@ class AirGenerator extends AbstractGenerator {
 			    			     target: { id: rect«x».id }
 			    			});
 			    			graph.addCells([rect«y», rect«x», link]); 
+			    			new joint.ui.Tooltip({
+			    			    target: 'g[model-id=' + rect«x».id + ']',
+			    			    content: 'Top directed tooltip.',
+			    			    top:  'g[model-id=' + rect«x».id + ']',
+			    			   direction: 'top',
+			    			});
 			    			«xAxis = xAxis+250»
 			    			«System.out.println(facetProp)»
 			    		«ENDFOR»
@@ -133,6 +184,12 @@ class AirGenerator extends AbstractGenerator {
 			    			     target: { id: rect«x».id }
 			    			});
 			    			graph.addCells([rect«y», rect«x», link]);
+			    			new joint.ui.Tooltip({
+			    						    			    target: 'g[model-id=' + rect«x».id + ']',
+			    						    			    content: 'Top directed tooltip.',
+			    						    			    top:  'g[model-id=' + rect«x».id + ']',
+			    						    			   direction: 'top',
+			    						    			});
 			    			«xAxis = xAxis+250»
 			    			«System.out.println(facetProp)»
 			    		«ENDFOR»
@@ -148,6 +205,7 @@ class AirGenerator extends AbstractGenerator {
 							size: { width: «widd», height: «hei» },
 			    	    attrs: { rect: { fill: '#FF5E4D', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black'}, text: { text: '«compo.name»', fill: 'white', 'font-size': 18, 'font-weight': 'bold' } }
 			    	});
+			    	tab['«compo.name»']= rect«x»
 			    			var link = new joint.dia.Link
 			    			({
 							 router: { name: 'manhattan' },
@@ -291,6 +349,131 @@ class AirGenerator extends AbstractGenerator {
 					«posX = xAxis»
 					«posY = yAxis»
 				«ENDFOR»
+				«FOR instance : resource.getAllContents.filter(Instance).toIterable»
+									var rect«x» = new joint.shapes.basic.Rect
+									({
+							    	    //position: { x: «xAxis», y: «yAxis» },
+							    	    size: { width: «widd», height: «hei» },
+							    	    attrs: { rect: { fill: '#AD4F09', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«instance.name»', fill: 'white', 'font-size': 18, 'font-weight': 'bold' } }
+							    	});
+							    	
+							    	tabI['«instance.name»']= rect«x»
+							    	var link = new joint.dia.Link
+							    				    			({
+							    								 router: { name: 'manhattan' },
+							    				    			     source: { id: tab['«instance.name»'].id },
+							    				    			     target: { id: rect«x».id }
+							    				    			});
+							    	graph.addCells([tab['«instance.name»'], rect«x», link]);
+							    	«var y = x»
+							    	«xAxis = 100»
+							    	«yAxis = yAxis + 30»
+							    		«FOR instanceProp : instance.eAllContents.filter(NameProperty).toIterable»
+							    			«x = x+1»
+							    			var rect«x» = new joint.shapes.basic.Rect
+							    			({
+							    			        //position: { x: «xAxis», y: «yAxis» },
+											size: { width: «wid», height: «hei» },
+							    			        attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«instanceProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+							    			});
+							    			var link = new joint.dia.Link
+							    			({
+											 router: { name: 'manhattan' },
+							    			     source: { id: rect«y».id },
+							    			     target: { id: rect«x».id }
+							    			});
+							    			graph.addCells([rect«y», rect«x», link]); 
+							    			«xAxis = xAxis+250»
+							    		«ENDFOR»
+							    		«FOR instanceProp : instance.eAllContents.filter(CountProperty).toIterable»
+							    			«x = x+1»
+							    			var rect«x» = new joint.shapes.basic.Rect
+							    			({
+							    			//position: { x: «xAxis», y: «yAxis» },
+											size: { width: «wid», height: «hei» },
+							    			         attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'count: «instanceProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+							    			});
+							    			var link = new joint.dia.Link
+							    			({
+											 router: { name: 'manhattan' },
+							    			     source: { id: rect«y».id },
+							    			     target: { id: rect«x».id }
+							    			});
+							    			graph.addCells([rect«y», rect«x», link]);
+							    			«xAxis = xAxis+250»
+							    		«ENDFOR»
+							    		«FOR instanceProp : instance.eAllContents.filter(ChannelsProperty).toIterable»
+							    			«x = x+1»
+							    			var rect«x» = new joint.shapes.basic.Rect
+							    			({
+							    			//position: { x: «xAxis», y: «yAxis» },
+											size: { width: «wid», height: «hei» },
+							    			         attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«instanceProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+							    			});
+							    			var link = new joint.dia.Link
+							    			({
+											 router: { name: 'manhattan' },
+							    			     source: { id: rect«y».id },
+							    			     target: { id: rect«x».id }
+							    			});
+							    			graph.addCells([rect«y», rect«x», link]);
+							    			«xAxis = xAxis+250»
+							    		«ENDFOR»
+							    		«FOR instanceProp : instance.eAllContents.filter(InstanceDataProperty).toIterable»
+							    			«x = x+1»
+							    			var rect«x» = new joint.shapes.basic.Rect
+							    			({
+							    			//position: { x: «xAxis», y: «yAxis» },
+											size: { width: «wid», height: «hei» },
+							    			         attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«instanceProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+							    			});
+							    			var link = new joint.dia.Link
+							    			({
+											 router: { name: 'manhattan' },
+							    			     source: { id: rect«y».id },
+							    			     target: { id: rect«x».id }
+							    			});
+							    			graph.addCells([rect«y», rect«x», link]);
+							    			«xAxis = xAxis+250»
+							    		«ENDFOR»
+							    		«FOR instanceProp : instance.eAllContents.filter(InstanceStateProperty).toIterable»
+							    			«x = x+1»
+							    			var rect«x» = new joint.shapes.basic.Rect
+							    			({
+							    			//position: { x: «xAxis», y: «yAxis» },
+											size: { width: «wid», height: «hei» },
+							    			         attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«instanceProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+							    			});
+							    			var link = new joint.dia.Link
+							    			({
+											 router: { name: 'manhattan' },
+							    			     source: { id: rect«y».id },
+							    			     target: { id: rect«x».id }
+							    			});
+							    			graph.addCells([rect«y», rect«x», link]);
+							    			«xAxis = xAxis+250»
+							    		«ENDFOR»
+							    		«FOR instanceProp : instance.eAllContents.filter(Instance).toIterable»
+							    			«x = x+1»
+							    			var rect«x» = new joint.shapes.basic.Rect
+							    			({
+							    			//position: { x: «xAxis», y: «yAxis» },
+											size: { width: «wid», height: «hei» },
+							    			         attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«instanceProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+							    			});
+							    			var link = new joint.dia.Link
+							    			({
+											 router: { name: 'manhattan' },
+							    			     source: { id: rect«y».id },
+							    			     target: { id: rect«x».id }
+							    			});
+							    			graph.addCells([rect«y», rect«x», link]);
+							    			«xAxis = xAxis+250»
+							    			
+							    		«ENDFOR»
+									«posX = xAxis»
+									«posY = yAxis»
+								«ENDFOR»
 
 	joint.layout.DirectedGraph.layout(graph, {
 		 nodeSep: 50,
