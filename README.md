@@ -1,6 +1,8 @@
 # Roboconf
-J'ai mis le dossier src du projet. Je n'ai pas pris tout le projet de Loic psk ça me générait des erreurs immenses. 
-En plus, à chaque compilation, de nouveaux fichiers sont générés et c'était juste trop de fichiers en trop.
+
+Regarder le google drive !!!  
+
+
 Il y a 3 fichiers importants : 
 
 I) MyDsl.xtext : 
@@ -15,10 +17,7 @@ II) validation/MyDslValidator.xtend :
                  y en a tout de même un très simple.
 
 III) generator/MyDslGenerator.xtend :
-                 Ce fichier est important pour l'étape 2, pour la génération d'un HTML. C'est assez chiant psk dans ce fichier,
-                 il y a une méthode qui va ouvrir un fichier, et va écrire des choses. Notre méthode va écrire du code Javascript/HTML
-                 qui va représenter le graph écrit en .dsl (notre langage) en JointJS. J'ai crée un dossier HTML dans lequel je vais
-                 mettre un fichier qui contient du code .dsl et un HTML qui va être générer automatiquement grâce à ce fichier.
+            fichier qui permet de generer le graph en html, je le push demain
               
               
 Je me suis inspiré de cette video (il y en a 4 de très intéréssantes) : 
