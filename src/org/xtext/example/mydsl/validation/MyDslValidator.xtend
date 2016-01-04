@@ -3,73 +3,250 @@
  */
 package org.xtext.example.mydsl.validation
 
-import org.xtext.example.mydsl.myDsl.Component
+import java.util.ArrayList
 import org.eclipse.xtext.validation.Check
+import org.xtext.example.mydsl.myDsl.ChildrenProperty
+import org.xtext.example.mydsl.myDsl.Component
+import org.xtext.example.mydsl.myDsl.ExportsVariable
+import org.xtext.example.mydsl.myDsl.Facet
+import org.xtext.example.mydsl.myDsl.FacetsProperty
+import org.xtext.example.mydsl.myDsl.Graph
 
 /**
  * This class contains custom validation rules. 
- *
+ * 
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
 class MyDslValidator extends AbstractMyDslValidator {
 	
-//  public static val INVALID_NAME = 'invalidName'
-//
-//	@Check
-//	def checkGreetingStartsWithCapital(Greeting greeting) {
-//		if (!Character.isUpperCase(greeting.name.charAt(0))) {
-//			warning('Name should start with a capital', 
-//					MyDslPackage.Literals.GREETING__NAME,
-//					INVALID_NAME)
-//		}
-//	}
+var Names = new ArrayList<String>; //Contiendra les noms des facets et compo déclarés
+var facetNames = new ArrayList<String>; //Contiendra les noms des facets et compo déclarés
 
-//  public static val INVALID_NAME = 'invalidName'
-//
-//	@Check
-//	def checkGreetingStartsWithCapital(Greeting greeting) {
-//		if (!Character.isUpperCase(greeting.name.charAt(0))) {
-//			warning('Name should start with a capital', 
-//					MyDslPackage.Literals.GREETING__NAME,
-//					INVALID_NAME)
-//		}
-//	}
-//	def checkExistingFacetList(ComponentProperties cp)
-//	{
-//		for(it : cp.optionalProperties.filter(FacetList))
-//		{
-//			if(!Character.isUpperCase(it.name.toString.charAt(0)))
-////			{
-//				warning('mochkila',MyDslPackage.Literals.CHILDREN_PROPERTY);
-//				System.out.println("MOCHKILA !!!"+it.name);
-//			}
-//		}
-//	}
-	@Check(NORMAL)
-	def checkExistingFacetList(Component c)
+@Check(FAST) 
+def checkUndeclaredFacets(Graph g) 
+{
+	for (f : g.eAllContents.filter(Facet).toIterable)
 	{
-		System.out.println("HAAAAAAAAAAAAAAAAAAAA!!!!!!!!!");
-		if(!Character.isUpperCase(c.getName().charAt(0)))
+		facetNames.add(f.name);
+	}
+	for(c : g.eAllContents.filter(Component).toIterable)
+	{
+		var cp = c.properties;
+		for (ittt : cp.optionalProperties) 
 		{
-			error("mochkila",null);
-			System.out.println("MOCHKILA !!!"+c.getName());
+			for (it : ittt.eAllContents.filter(FacetsProperty).toIterable) 
+			{
+				var subName = it.facetsNames.toString.substring(1,it.facetsNames.toString.length()-1);
+				var subNames = new ArrayList<String>;
+			  	var iterator = 0;
+			  	var nbNames = 0;
+			  	var name = "";
+			  	var separator = ",";
+			  	var space = " "; 
+			  	while(iterator != subName.length)
+			  	{
+			  		if(subName.toString.charAt(iterator).equals(separator.toString.charAt(0)))
+			  		{
+			  			subNames.add(name);
+			  			name="";
+			  			nbNames++;
+			  		}
+			  		else if(subName.toString.charAt(iterator).equals(space.toString.charAt(0)))
+			  		{
+			  		}
+			  		else
+			  		{
+			  			name=name+subName.toString.charAt(iterator).toString;
+			  		}
+			  		iterator++;
+			  	}
+			  	subNames.add(name);
+			  	for(itt : subNames)
+			  	{
+			  		if(!facetNames.contains(itt))
+			  		{
+			  			error(it.facetsNames.toString+" not declared previoulsy",it,null);
+			  		}
+			  	}
+			}
+			
 		}
 	}
-	
-	@Check
-	def checkComponentUniqueName(Graph g)
+}
+
+@Check(FAST)
+def checkUniqueComponent(Graph g)
+ {
+	var compoNames = new ArrayList<String>; //Contiendra les noms des components déclarés
+	for (c : g.eAllContents.filter(Component).toIterable)
 	{
-		val names = new HashSet<String>();
-		for (Component c : g.components)
+		if(compoNames.contains(c.name))
 		{
-			if (names.contains(c.name)) error("Component or Facet name must be unique", c.eContainingFeature);
-				names.add(c.name)
-	
+			error(c.name+" declared twice in graph",c,null);
 		}
-		for (Facet f : g.facets)
+		compoNames.add(c.name);
+	}
+ }
+ 
+ @Check(FAST)
+def checkUniqueFacet(Graph g)
+ {
+	var facetNames = new ArrayList<String>; //Contiendra les noms des facets déclarés
+	for (f : g.eAllContents.filter(Facet).toIterable)
+	{
+		if(facetNames.contains(f.name))
 		{
-			if (names.contains(f.name)) error("Component or Facet name must be unique", f.eContainingFeature);
-			names.add(f.name)	
+			error(f.name+" declared twice in graph",f,null);
+		}
+		facetNames.add(f.name);
+	}
+ }
+
+@Check(FAST)
+def checkUniqueChildren(Graph g)
+{
+	for (f : g.eAllContents.filter(Facet).toIterable)
+	{
+		var facetChildrenNames = new ArrayList<String>; //Contiendra les noms des children de facets déclarés
+		for(c : f.eAllContents.filter(ChildrenProperty).toIterable)
+		{
+			for(n : c.name)
+			{
+				if(facetChildrenNames.contains(n))
+				{
+					error(n+" used twice in same facet",c,null);
+				}
+				facetChildrenNames.add(n);
+			}
 		}
 	}
+	for (c : g.eAllContents.filter(Component).toIterable)
+	{
+		var componentChildrenNames = new ArrayList<String>; //Contiendra les noms des children de components déclarés
+		for(ch : c.eAllContents.filter(ChildrenProperty).toIterable)
+		{
+			for(n : ch.name)
+			{
+				if(componentChildrenNames.contains(n))
+				{
+					error(n+" used twice in same component",ch,null);
+				}
+				componentChildrenNames.add(n);
+			}
+		}
+	}
+}
+
+@Check(FAST)
+def checkUniqueExport(Graph g)
+{
+	for (f : g.eAllContents.filter(Facet).toIterable)
+	{
+		var facetExportNames = new ArrayList<String>; //Contiendra les noms des children de facets déclarés
+		for(e : f.eAllContents.filter(ExportsVariable).toIterable)
+		{
+			if(facetExportNames.contains(e.name))
+			{
+				error(e.name+" used twice in same facet",e,null);
+			}
+			facetExportNames.add(e.name);
+		}
+	}
+	for (c : g.eAllContents.filter(Component).toIterable)
+	{
+		var componentExportNames = new ArrayList<String>; //Contiendra les noms des children de components déclarés
+		for(e : c.eAllContents.filter(ExportsVariable).toIterable)
+		{
+			if(componentExportNames.contains(e.name))
+			{
+				error(e.name+" used twice in same component",e,null);
+			}
+			componentExportNames.add(e.name);
+		}
+	}
+}
+
+@Check(FAST)
+def checkUndeclaredChildren(Graph g)
+{
+	for(c : g.eAllContents.filter(Component).toIterable)
+	{
+		if(!Names.contains(c.name))
+		{
+			Names.add(c.name);
+		}
+	}
+	for (f : g.eAllContents.filter(Facet).toIterable)
+	{
+		for(c : f.eAllContents.filter(ChildrenProperty).toIterable)
+		{
+			for(n : c.name)
+			{
+				if(!Names.contains(n))
+				{
+					error(n+" undeclared",c,null);
+				}
+			}
+		}
+	}
+	for (c : g.eAllContents.filter(Component).toIterable)
+	{
+		for(ch : c.eAllContents.filter(ChildrenProperty).toIterable)
+		{
+			for(n : ch.name)
+			{
+				if(!Names.contains(n))
+				{
+					error(n+" undeclared",c,null);
+				}
+			}
+		}
+	}
+}
+
+@Check(FAST) //Je ne suis pas si sûr de celle-ci
+def checkUndeclaredExport(Graph g)
+{
+	for(f : g.eAllContents.filter(Facet).toIterable)
+	{
+		if(!Names.contains(f.name))
+		{
+			Names.add(f.name);
+		}
+	}
+	for(c : g.eAllContents.filter(Component).toIterable)
+	{
+		if(!Names.contains(c.name))
+		{
+			Names.add(c.name);
+		}
+	}
+	for (f : g.eAllContents.filter(Facet).toIterable)
+	{
+		for(ev : f.eAllContents.filter(ExportsVariable).toIterable)
+		{
+			if(!Names.contains(ev.name))
+			{
+				error(ev.name+" undeclared",ev,null);
+			}
+		}
+	}
+	for (c : g.eAllContents.filter(Component).toIterable)
+	{
+		for(ev : c.eAllContents.filter(ExportsVariable).toIterable)
+		{
+			if(!Names.contains(ev.name))
+			{
+				error(ev.name+" undeclared",ev,null);
+			}
+		}
+	}
+}
+
+// check instanceOf name unique
+// check toutes les variables d'instanceOf uniques
+// check instanceOf de component existant 
+// check les variables de instanceOf existent dans le component
+// check imports (class et prop existent)
+// check extend existent
 }
