@@ -76,7 +76,12 @@ OptionalInstanceProperty:
 	(channelsProperty = ChannelsProperty) |
 	(instanceDataProperty = InstanceDataProperty) |
 	(instanceStateProperty = InstanceStateProperty) |
-	(compositionProperty = CompositionProperty)
+	(compositionProperty = CompositionProperty) |
+	(exportedVariablesProperty = ExportedVariablesProperty)
+;
+
+ExportedVariablesProperty:
+	(name = ID) ':' (value = VARIABLEVALUE) ';' 	
 ;
 
 InstallerProperty:
@@ -135,5 +140,4 @@ InstanceStateProperty:
 CompositionProperty:
 	Instance
 ;
-
 
