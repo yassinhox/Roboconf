@@ -23,7 +23,7 @@ IP:
 ;
 
 VARIABLEVALUE:
-	INT | STRING | IP
+	INT | STRING | IP 
 ;
 
 Component:
@@ -97,8 +97,16 @@ ExportsProperty:
 ;
 
 ExportsVariable:
-	(name = 'ip') |
-	((name = ID) '=' (value = VARIABLEVALUE)) 
+	(name = 'ip') |(
+	(name = 'udpport') | 
+	(name = 'tcpport') |
+	(name = 'maxInstances') |
+	(name = 'maxPercentageCPU') |
+	(name = 'maxPercentageMemory') |
+	(name = 'maxTimeOfDeployment') |
+	(name = ID)
+	) '=' (value = VARIABLEVALUE)
+	
 ;
 
 ImportsProperty:
