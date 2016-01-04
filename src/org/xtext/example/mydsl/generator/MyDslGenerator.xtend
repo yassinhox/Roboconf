@@ -32,461 +32,1011 @@ import org.xtext.example.mydsl.air.CompositionProperty
 class AirGenerator extends AbstractGenerator {
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
-		fsa.generateFile('graph.html', '''
-			«var x = 0»
-			«var posX = 0»
-			«var posY = 0»
-			«var xAxis = 100»
-			«var wid = 260»
-			«var widd = 180»
-			«var hei = 30»
-			«var yAxis = 30»
-			<!DOCTYPE html>
-			<html>
-			
-			    <head>
-			        <link rel="stylesheet" href="http://www.jointjs.com/downloads/joint.css" />
-			        <script type="text/javascript" src="http://jointjs.com/js/vendor/jquery/jquery.min.js"></script>
-			        <script type="text/javascript" src="http://jointjs.com/js/vendor/lodash/lodash.min.js"></script>
-			        <script type="text/javascript" src="http://jointjs.com/js/vendor/backbone/backbone-min.js"></script>
-			        <script type="text/javascript" src="http://www.jointjs.com/downloads/joint.js"></script>
-					<script type="text/javascript" src="http://jointjs.com/js/rappid/v1.7/rappid.min.js"></script>
-					<script type="text/javascript" src="http://jointjs.com/js/vendor/graphlib/dist/graphlib.core.js"></script>
-					<script type="text/javascript" src="http://jointjs.com/js/vendor/dagre/dist/dagre.core.js"></script>
-					<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jointjs/0.9.7/joint.layout.DirectedGraph.min.js"></script>
-			   		<link rel="stylesheet" type="text/css" href="joint.ui.tooltip.css" />
-			   		<script src="joint.ui.tooltip.js"></script>
-			   <style>
-			   table, td {
-			       border: 1px solid black;
-			   }
-			   </style>
-			    </head>
-			
-			    <body>
-			       
-			       <table>
-			       	<tr>
-			       		<td BGCOLOR="#74D0F1">_</td>
-			       		<td>Facet</td>
-			       	</tr>
-			        <tr>
-			       		<td BGCOLOR="#9683EC">_</td>
-			       		<td>Facet properties</td>
-			       </tr>
-			       <tr>
-			       		<td BGCOLOR="#FF5E4D">_</td>
-			       		<td>Component</td>
-			       </tr>
-			       <tr>
-			       		<td BGCOLOR="#FFCB60">_</td>
-			       		<td>Component properties</td>
-			       </tr>
-			       <tr>
-			       		<td BGCOLOR="#AD4F09">_</td>
-			       		<td>Instance</td>
-			       </tr>
-			       <tr>
-			       		<td BGCOLOR="#F88E55">_</td>
-			       		<td>Instances properties</td>
-			       </tr>
-			       			      			         
-			       </table>
-			         <div id="paper"></div>
-			      <script type="text/javascript">
-			
-			        var graph = new joint.dia.Graph;
-			        
-			        var tab = new Object()
-			        var tabI = new Object()
-			
-			        var paper = new joint.dia.Paper
-			        ({
-			            //el: $('#myholder'),
-			            width: 1600,
-			            height: 1600,
-			            model: graph,
-			            gridSize: 1
-			        });
-				var paperScroller = new joint.ui.PaperScroller({
-				    paper: paper,
-				    autoResizePaper: true
-				});
-
-				paper.on('blank:pointerdown', paperScroller.startPanning);
-				paperScroller.$el.css({ width: '100%', height: '100%' }).appendTo('#paper');
-
-					var rect00 = new joint.shapes.basic.Rect
-					({
-			    	    //position: { x: 100, y: 30 },
-			    	    size: { width: 100, height: 30 },
-			    	    attrs: { rect: { fill: '#2C3E50', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, 
-			    	    text: { 
-			    	    	text: 'Model', fill: 'white',
-			    	            'font-size': 18, 'font-weight': 'bold', 'font-variant': 'small-caps', 'text-transform': 'capitalize'
-			    	    } }
-			    	});
-
-				«FOR facet : resource.getAllContents.filter(Facet).toIterable»
-					var rect«x» = new joint.shapes.basic.Rect
-					({
-			    	    //position: { x: «xAxis», y: «yAxis» },
-			    	    size: { width: «widd», height: «hei» },
-			    	    attrs: { rect: { fill: '#74D0F1', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«facet.name»', fill: 'white', 'font-size': 18, 'font-weight': 'bold' } }
-			    	});
-			    			var link = new joint.dia.Link
-			    			({
-							 router: { name: 'manhattan' },
-			    			     source: { id: rect00.id },
-			    			     target: { id: rect«x».id }
-			    			});
-			    			graph.addCells([rect00, rect«x», link]); 
-			    	«System.out.println(facet)»
-			    	«var y = x»
-			    	«xAxis = 100»
-			    	«yAxis = yAxis + 30»
-			    		«FOR facetProp : facet.eAllContents.filter(ChildrenProperty).toIterable»
-			    			«x = x+1»
-			    			var rect«x» = new joint.shapes.basic.Rect
-			    			({
-			    			        //position: { x: «xAxis», y: «yAxis» },
-							size: { width: «wid», height: «hei» },
-			    			        attrs: { rect: { fill: '#9683EC', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«facetProp.name»', fill: 'white', 'font-size': 12, 'font-weight': 'bold' } }
-			    			});
-			    			var link = new joint.dia.Link
-			    			({
-							 router: { name: 'manhattan' },
-			    			     source: { id: rect«y».id },
-			    			     target: { id: rect«x».id }
-			    			});
-			    			graph.addCells([rect«y», rect«x», link]); 
-			    			new joint.ui.Tooltip({
-			    			    target: 'g[model-id=' + rect«x».id + ']',
-			    			    content: 'Top directed tooltip.',
-			    			    top:  'g[model-id=' + rect«x».id + ']',
-			    			   direction: 'top',
-			    			});
-			    			«xAxis = xAxis+250»
-			    			«System.out.println(facetProp)»
-			    		«ENDFOR»
-			    		«FOR facetProp : facet.eAllContents.filter(ExportsVariable).toIterable»
-			    			«x = x+1»
-			    			var rect«x» = new joint.shapes.basic.Rect
-			    			({
-			    			//position: { x: «xAxis», y: «yAxis» },
-							size: { width: «wid», height: «hei» },
-			    			         attrs: { rect: { fill: '#9683EC', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«facetProp.name»', fill: 'white', 'font-size': 12, 'font-weight': 'bold' } }
-			    			});
-			    			var link = new joint.dia.Link
-			    			({
-							 router: { name: 'manhattan' },
-			    			     source: { id: rect«y».id },
-			    			     target: { id: rect«x».id }
-			    			});
-			    			graph.addCells([rect«y», rect«x», link]);
-			    			new joint.ui.Tooltip({
-			    						    			    target: 'g[model-id=' + rect«x».id + ']',
-			    						    			    content: 'Top directed tooltip.',
-			    						    			    top:  'g[model-id=' + rect«x».id + ']',
-			    						    			   direction: 'top',
-			    						    			});
-			    			«xAxis = xAxis+250»
-			    			«System.out.println(facetProp)»
-			    		«ENDFOR»
-					«posX = xAxis»
-					«posY = yAxis»
-				«ENDFOR»
-
-				«FOR compo : resource.getAllContents.filter(Component).toIterable»
-			    		«x = x+1»
-					var rect«x» = new joint.shapes.basic.Rect
-					({
-			    	    //position: { x: «posX», y: «posY» },
-							size: { width: «widd», height: «hei» },
-			    	    attrs: { rect: { fill: '#FF5E4D', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black'}, text: { text: '«compo.name»', fill: 'white', 'font-size': 18, 'font-weight': 'bold' } }
-			    	});
-			    	tab['«compo.name»']= rect«x»
-			    			var link = new joint.dia.Link
-			    			({
-							 router: { name: 'manhattan' },
-			    			     source: { id: rect00.id },
-			    			     target: { id: rect«x».id }
-			    			});
-			    			graph.addCells([rect00, rect«x», link]); 
-			    	«System.out.println(compo)»
-			    	«var y = x»
-			    	«xAxis = posX+250»
-			    	«yAxis = posY+100»
-			    		«FOR compoProp : compo.eAllContents.filter(InstallerProperty).toIterable»
-			    			«x = x+1»
-			    			var rect«x» = new joint.shapes.basic.Rect
-			    			({
-			    			        //position: { x: «xAxis», y: «yAxis» },
-							size: { width: «wid», height: «hei» },
-			    			        attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«compoProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
-			    			});
-			    			var link = new joint.dia.Link
-			    			({
-							 router: { name: 'manhattan' },
-			    			     source: { id: rect«y».id },
-			    			     target: { id: rect«x».id }
-			    			});
-			    			graph.addCells([rect«y», rect«x», link]); 
-			    			«xAxis = xAxis+250»
-			    			«System.out.println(compoProp)»
-			    		«ENDFOR»
-			    		«FOR compoProp : compo.eAllContents.filter(ChildrenProperty).toIterable»
-			    			«x = x+1»
-			    			var rect«x» = new joint.shapes.basic.Rect
-			    			({
-			    			//position: { x: «xAxis», y: «yAxis» },
-							size: { width: «wid», height: «hei» },
-			    			        attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«compoProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
-			    			});
-			    			var link = new joint.dia.Link
-			    			({
-							 router: { name: 'manhattan' },
-			    			     source: { id: rect«y».id },
-			    			     target: { id: rect«x».id }
-			    			});
-			    			graph.addCells([rect«y», rect«x», link]);
-			    			«xAxis = xAxis+250»
-			    			«System.out.println(compoProp)»
-			    		«ENDFOR»
-			    		«FOR compoProp : compo.eAllContents.filter(ExportsVariable).toIterable»
-			    			«x = x+1»
-			    			var rect«x» = new joint.shapes.basic.Rect
-			    			({
-			    			//position: { x: «xAxis», y: «yAxis» },
-							size: { width: «wid», height: «hei» },
-			    			         attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«compoProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
-			    			});
-			    			var link = new joint.dia.Link
-			    			({
-							 router: { name: 'manhattan' },
-			    			     source: { id: rect«y».id },
-			    			     target: { id: rect«x».id }
-			    			});
-			    			graph.addCells([rect«y», rect«x», link]);
-			    			«xAxis = xAxis+250»
-			    			«System.out.println(compoProp)»
-			    		«ENDFOR»
-			    		«FOR compoProp : compo.eAllContents.filter(ImportsVariable).toIterable»
-			    			«x = x+1»
-			    			var rect«x» = new joint.shapes.basic.Rect
-			    			({
-			    			 //position: { x: «xAxis», y: «yAxis» },
-							size: { width: «wid», height: «hei» },
-			    			     attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«compoProp.componentName»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
-			    			 });
-			    			var link = new joint.dia.Link
-			    			({
-							 router: { name: 'manhattan' },
-			    			     source: { id: rect«y».id },
-			    			     target: { id: rect«x».id }
-			    			});
-			    			graph.addCells([rect«y», rect«x», link]);
-			    			«xAxis = xAxis+250»
-					«System.out.println(compoProp)»
-					«ENDFOR»
-					«FOR compoProp : compo.eAllContents.filter(FacetProperties).toIterable»
-						«FOR compoPropp : compoProp.eAllContents.filter(ChildrenProperty).toIterable»
-						«x = x+1»
-						var rect«x» = new joint.shapes.basic.Rect
-						({
-						 	        //position: { x: «xAxis», y: «yAxis» },
-							size: { width: «wid», height: «hei» },
-						 	         attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«compoPropp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+	generateGraph(fsa, resource)
+		
+	}
+	
+	def generateCss (IFileSystemAccess2 fsa, Resource resource) {
+		fsa.generateFile('joint.ui.tooltip.css', '''
+					/*! Rappid - the diagramming toolkit
+					
+					Copyright (c) 2013 client IO
+					
+					 2015-02-04 
+					
+					
+					This Source Code Form is subject to the terms of the Rappid License
+					, v. 2.0. If a copy of the Rappid License was not distributed with this
+					file, You can obtain one at http://jointjs.com/license/rappid_v2.txt
+					 or from the Rappid archive as was distributed by client IO. See the LICENSE file.*/
+					
+					
+					.tooltip {
+					   position: fixed;
+					   z-index: 100;
+					   border-radius: 5px;
+					   background-color: #333;
+					   border: 2px solid rgb(36, 36, 36);
+					   color: #bcbcbc;
+					   pointer-events: none;
+					   padding: 10px;
+					   font-size: 14px;
+					   text-shadow: 0 -1px 0 #000;
+					}
+					.tooltip.small {
+					   padding: 5px;
+					   font-size: 10px;
+					}
+					.tooltip:after, .tooltip:before {
+					   border: solid transparent;
+					   content: " ";
+					   height: 0;
+					   width: 0;
+					   position: absolute;
+					   pointer-events: none;
+					}
+					.tooltip.left:after, .tooltip.left:before {
+					   right: 100%;
+					   top: 50%;
+					}
+					.tooltip.right:after, .tooltip.right:before {
+					   top: 50%;
+					   left: 100%;
+					}
+					.tooltip.top:after, .tooltip.top:before {
+					   left: 50%;
+					   bottom: 100%;
+					}
+					.tooltip.bottom:after, .tooltip.bottom:before {
+					   left: 50%;
+					   top: 100%;
+					}
+					
+					.tooltip:after {
+					   border-width: 6px;
+					}
+					.tooltip.left:after {
+					   border-right-color: #333;
+					   margin-top: -6px;
+					}
+					.tooltip.right:after {
+					   border-left-color: #333;
+					   margin-top: -6px;
+					}
+					.tooltip.top:after {
+					   border-bottom-color: #333;
+					   margin-left: -6px;
+					}
+					.tooltip.bottom:after {
+					   border-top-color: #333;
+					   margin-left: -6px;
+					}
+					
+					.tooltip:before {
+					   border-width: 8px;
+					}
+					.tooltip.left:before {
+					   border-right-color: rgb(36, 36, 36);
+					   margin-top: -8px;
+					}
+					.tooltip.right:before {
+					   border-left-color: rgb(36, 36, 36);
+					   margin-top: -8px;
+					}
+					.tooltip.top:before {
+					   border-bottom-color: rgb(36, 36, 36);
+					   margin-left: -8px;
+					}
+					.tooltip.bottom:before {
+					   border-top-color: rgb(36, 36, 36);
+					   margin-left: -8px;
+					}
+					''')
+					
+					fsa.generateFile('joint.ui.tooltip.js', '''
+					/*! Rappid - the diagramming toolkit
+					
+					Copyright (c) 2013 client IO
+					
+					 2015-02-04 
+					
+					
+					This Source Code Form is subject to the terms of the Rappid License
+					, v. 2.0. If a copy of the Rappid License was not distributed with this
+					file, You can obtain one at http://jointjs.com/license/rappid_v2.txt
+					 or from the Rappid archive as was distributed by client IO. See the LICENSE file.*/
+					
+					
+					joint.ui.Tooltip = Backbone.View.extend({
+					
+					    className: 'tooltip',
+					
+					    options: {
+					        // `left` allows you to set a selector (or DOM element) that
+					        // will be used as the left edge of the tooltip. This is useful when configuring a tooltip
+					        // that should be shown "after" some other element. Other sides are analogous.
+					        left: undefined,
+					        right: undefined,
+					        top: undefined,
+					        bottom: undefined,
+					        padding: 10,
+					        target: undefined,
+					        rootTarget: undefined
+					    },
+					
+					    initialize: function(options) {
+					
+						this.options = _.extend({}, _.result(this, 'options'), options || {});
+					
+					        _.bindAll(this, 'render', 'hide', 'position');
+					
+					        if (this.options.rootTarget) {
+					            
+					            this.$rootTarget = $(this.options.rootTarget);
+					            
+					            this.$rootTarget.on('mouseover', this.options.target, this.render);
+					            this.$rootTarget.on('mouseout', this.options.target, this.hide);
+					            this.$rootTarget.on('mousedown', this.options.target, this.hide);
+					
+					        } else {
+					        
+					            this.$target = $(this.options.target);
+					            
+					            this.$target.on('mouseover', this.render);
+					            this.$target.on('mouseout', this.hide);
+					            this.$target.on('mousedown', this.hide);
+					        }
+					
+					        this.$el.addClass(this.options.direction);
+					    },
+					
+					    remove: function() {
+					
+					        this.$target.off('mouseover', this.render);
+					        this.$target.off('mouseout', this.hide);
+					        this.$target.off('mousedown', this.hide);
+					        
+					        Backbone.View.prototype.remove.apply(this, arguments);
+					    },
+					
+					    hide: function() {
+					
+					        Backbone.View.prototype.remove.apply(this, arguments);
+					    },
+					    
+					    render: function(evt) {
+					
+					        var target;
+					        var isPoint = !_.isUndefined(evt.x) && !_.isUndefined(evt.y);
+					        
+					        if (isPoint) {
+					            
+					            target = evt;
+					            
+					        } else {
+					
+					            this.$target = $(evt.target).closest(this.options.target);
+					            target = this.$target[0];
+					        }
+					        
+					        this.$el.html(_.isFunction(this.options.content) ? this.options.content(target) : this.options.content);
+					        
+					        // Hide the element first so that we don't get a jumping effect during the image loading.
+					        this.$el.hide();
+					        $(document.body).append(this.$el);
+					
+					        // If there is an image in the `content`, wait till it's loaded as only after that
+					        // we know the dimension of the tooltip.
+					        var $images = this.$('img');
+					        if ($images.length) {
+					
+					            $images.on('load', _.bind(function() { this.position(isPoint ? target : undefined); }, this));
+					            
+					        } else {
+					
+					            this.position(isPoint ? target : undefined);
+					        }
+					    },
+					
+					    getElementBBox: function(el) {
+					
+					        var $el = $(el);
+					        var offset = $el.offset();
+					        var bbox;
+					
+					        // Compensate for the document scroll.
+					        // Safari uses `document.body.scrollTop` only while Firefox uses `document.documentElement.scrollTop` only.
+					        // Google Chrome is the winner here as it uses both.
+					        var scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+					        var scrollLeft = document.body.scrollLeft || document.documentElement.scrollLeft;
+					        
+					        offset.top -= (scrollTop || 0);
+					        offset.left -= (scrollLeft || 0);
+					        
+					        if (el.ownerSVGElement) {
+					
+					            // Use Vectorizer to get the dimensions of the element if it is an SVG element.
+					            bbox = V(el).bbox();
+					
+					            // getBoundingClientRect() used in jQuery.fn.offset() takes into account `stroke-width`
+					            // in Firefox only. So clientRect width/height and getBBox width/height in FF don't match.
+					            // To unify this across all browsers we add the `stroke-width` (left & top) back to
+					            // the calculated offset.
+					            var crect = el.getBoundingClientRect();
+					            var strokeWidthX = (crect.width - bbox.width) / 2;
+					            var strokeWidthY = (crect.height - bbox.height) / 2;
+					
+					            // The `bbox()` returns coordinates relative to the SVG viewport, therefore, use the
+					            // ones returned from the `offset()` method that are relative to the document.
+					            bbox.x = offset.left + strokeWidthX;
+					            bbox.y = offset.top + strokeWidthY;
+					            
+					        } else {
+					            
+					            bbox = { x: offset.left, y: offset.top, width: $el.outerWidth(), height: $el.outerHeight() };
+					        }
+					
+					        return bbox;
+					    },
+					
+					    position: function(p) {
+					
+					        var bbox;
+					
+					        if (p) {
+					            
+					            bbox = { x: p.x, y: p.y, width: 1, height: 1 };
+					            
+					        } else {
+					
+					            bbox = this.getElementBBox(this.$target[0]);            
+					        }
+					        
+					        var padding = this.options.padding;
+					
+					        // Show the tooltip. Do this before we ask for its dimension, otherwise they won't be defined yet.
+					        this.$el.show();
+					        
+					        var height = this.$el.outerHeight();
+					        var width = this.$el.outerWidth();
+					        
+					        // If `options.left` selector or DOM element is defined, we use its right coordinate
+					        // as a left coordinate for the tooltip. In other words, the `options.left` element
+					        // is on the left of the tooltip. This is useful when you want to tooltip to
+					        // appear "after" a certain element.
+					        if (this.options.left) {
+					
+					            var $left = $(_.isFunction(this.options.left) ? this.options.left(this.$target[0]) : this.options.left);
+					            var leftBbox = this.getElementBBox($left[0]);
+					            this.$el.css({
+					                left: leftBbox.x + leftBbox.width + padding,
+					                top: bbox.y + bbox.height/2 - height/2
+					            });
+					            
+					        } else if (this.options.right) {
+					
+					            var $right = $(_.isFunction(this.options.right) ? this.options.right(this.$target[0]) : this.options.right);
+					            var rightBbox = this.getElementBBox($right[0]);
+					            this.$el.css({
+					                left: rightBbox.x - width - padding,
+					                top: bbox.y + bbox.height/2 - height/2
+					            });
+					
+					        } else if (this.options.top) {
+					
+					            var $top = $(_.isFunction(this.options.top) ? this.options.top(this.$target[0]) : this.options.top);
+					            var topBbox = this.getElementBBox($top[0]);
+					            this.$el.css({
+					                top: topBbox.y + topBbox.height + padding,
+					                left: bbox.x + bbox.width/2 - width/2
+					            });
+					
+					        } else if (this.options.bottom) {
+					
+					            var $bottom = $(_.isFunction(this.options.bottom) ? this.options.bottom(this.$target[0]) : this.options.bottom);
+					            var bottomBbox = this.getElementBBox($bottom[0]);
+					            this.$el.css({
+					                top: bottomBbox.y - height - padding,
+					                left: bbox.x + bbox.width/2 - width/2
+					            });
+					            
+					        } else {
+					
+					            this.$el.css({
+					                left: bbox.x + bbox.width + padding,
+					                top: bbox.y + bbox.height/2 - height/2
+					            });
+					        }
+					    }
+					});
+					''')
+		
+	}
+	
+	def generateGraph (IFileSystemAccess2 fsa, Resource resource) {
+				generateCss (fsa,resource)
+				fsa.generateFile('graph.html', '''
+					«var x = 0»
+					«var posX = 0»
+					«var posY = 0»
+					«var xAxis = 100»
+					«var wid = 260»
+					«var widd = 180»
+					«var hei = 30»
+					«var yAxis = 30»
+					<!DOCTYPE html>
+					<html>
+					
+						<head>
+							<link rel="stylesheet" href="http://www.jointjs.com/downloads/joint.css" />
+							<script type="text/javascript" src="http://jointjs.com/js/vendor/jquery/jquery.min.js"></script>
+							<script type="text/javascript" src="http://jointjs.com/js/vendor/lodash/lodash.min.js"></script>
+							<script type="text/javascript" src="http://jointjs.com/js/vendor/backbone/backbone-min.js"></script>
+							<script type="text/javascript" src="http://www.jointjs.com/downloads/joint.js"></script>
+							<script type="text/javascript" src="http://jointjs.com/js/rappid/v1.7/rappid.min.js"></script>
+							<script type="text/javascript" src="http://jointjs.com/js/vendor/graphlib/dist/graphlib.core.js"></script>
+							<script type="text/javascript" src="http://jointjs.com/js/vendor/dagre/dist/dagre.core.js"></script>
+							<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jointjs/0.9.7/joint.layout.DirectedGraph.min.js"></script>
+							<link rel="stylesheet" type="text/css" href="joint.ui.tooltip.css" />
+							<script src="joint.ui.tooltip.js"></script>
+					   <style>
+					   table, td {
+						   border: 1px solid black;
+					   }
+					   </style>
+						</head>
+					
+						<body>
+						   
+						   <table>
+							<tr>
+								<td BGCOLOR="#74D0F1">_</td><td>Facet</td>
+							</tr>
+							<tr>
+								<td BGCOLOR="#9683EC">_</td><td>Facet properties</td>
+						   </tr>
+						   <tr>
+								<td BGCOLOR="#FF5E4D">_</td><td>Component</td>
+						   </tr>
+						   <tr>
+								<td BGCOLOR="#FFCB60">_</td><td>Component properties</td>
+						   </tr>
+						   <tr>
+								<td BGCOLOR="#AD4F09">_</td><td>Instance</td>
+						   </tr>
+						   <tr>
+								<td BGCOLOR="#F88E55">_</td><td>Instances properties</td>
+						   </tr>
+															 
+						   </table>
+							 <div id="paper"></div>
+						  <script type="text/javascript">
+					
+							var graph = new joint.dia.Graph;
+							
+							var tab = new Object()
+							var tabI = new Object()
+					
+							var paper = new joint.dia.Paper
+							({
+								//el: $('#myholder'),
+								width: 1600,
+								height: 1600,
+								model: graph,
+								gridSize: 1
+							});
+						var paperScroller = new joint.ui.PaperScroller({
+							paper: paper,
+							autoResizePaper: true
 						});
-						var link = new joint.dia.Link
-						({
-							 router: { name: 'manhattan' },
-						        source: { id: rect«y».id },
-						        target: { id: rect«x».id }
-						});
-						graph.addCells([rect«y», rect«x», link]);
-						«xAxis = xAxis+250»
-						   «System.out.println(compoPropp)»
-						«ENDFOR»
 
-						«FOR compoProppp : compoProp.eAllContents.filter(ExportsVariable).toIterable»
-						«x = x+1»
-						var rect«x» = new joint.shapes.basic.Rect
-						({
-						 	        //position: { x: «xAxis», y: «yAxis» },
-							size: { width: «wid», height: «hei» },
-						 	         attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«compoProppp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
-						});
-						var link = new joint.dia.Link
-						({
-							 router: { name: 'manhattan' },
-						        source: { id: rect«y».id },
-						        target: { id: rect«x».id }
-						});
-						graph.addCells([rect«y», rect«x», link]);
-						«xAxis = xAxis+250»
-						   «System.out.println(compoProppp)»
-						«ENDFOR»
-					«ENDFOR»
-					«FOR compoProp : compo.eAllContents.filter(ExtendsProperty).toIterable»
-						«x = x+1»
-						var rect«x» = new joint.shapes.basic.Rect
-						({
-							    //position: { x: «xAxis», y: «yAxis» },
-							size: { width: «wid», height: «hei» },
-							          attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«compoProp.extendsNames»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
-							      });
-						var link = new joint.dia.Link
-						({
-							 router: { name: 'manhattan' },
-						        source: { id: rect«y».id },
-						target: { id: rect«x».id }
-						     });
-						graph.addCells([rect«y», rect«x», link]);
-						«xAxis = xAxis+250»
-						   «System.out.println(compoProp)»
-					«ENDFOR»
-					«posX = xAxis»
-					«posY = yAxis»
-				«ENDFOR»
-				«FOR instance : resource.getAllContents.filter(Instance).toIterable»
+						paper.on('blank:pointerdown', paperScroller.startPanning);
+						paperScroller.$el.css({ width: '100%', height: '100%' }).appendTo('#paper');
+
+							var rect00 = new joint.shapes.basic.Rect
+							({
+								size: { width: 100, height: 30 },
+								attrs: { rect: { fill: '#2C3E50', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, 
+								text: { 
+									text: 'Model', fill: 'white',
+										'font-size': 18, 'font-weight': 'bold', 'font-variant': 'small-caps', 'text-transform': 'capitalize'
+								} }
+							});
+
+						«FOR facet : resource.getAllContents.filter(Facet).toIterable»
+							var rect«x» = new joint.shapes.basic.Rect
+							({
+								size: { width: «widd», height: «hei» },
+								attrs: { rect: { fill: '#74D0F1', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«facet.name»', fill: 'white', 'font-size': 18, 'font-weight': 'bold' } }
+							});
+									var link = new joint.dia.Link
+									({
+									 router: { name: 'manhattan' },
+										 source: { id: rect00.id },
+										 target: { id: rect«x».id }
+									});
+									graph.addCells([rect00, rect«x», link]); 
+							«var y = x»
+							«xAxis = 100»
+							«yAxis = yAxis + 30»
+							«var ini = x+1»
+								«FOR facetProp : facet.eAllContents.filter(ChildrenProperty).toIterable»
+									«x = x+1»
+									if («x» == «ini») {
+										var rect«x» = new joint.shapes.basic.Rect
+										({
+										size: { width: «wid», height: «hei» },
+												attrs: { rect: { fill: '#9683EC', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ChildrenProperty', fill: 'white', 'font-size': 12, 'font-weight': 'bold' } }
+										});
+										var link = new joint.dia.Link
+										({
+										 router: { name: 'manhattan' },
+											 source: { id: rect«y».id },
+											 target: { id: rect«x».id }
+										});
+										graph.addCells([rect«y», rect«x», link]); 
+										«x = x+1»
+									}
 									var rect«x» = new joint.shapes.basic.Rect
 									({
-							    	    //position: { x: «xAxis», y: «yAxis» },
-							    	    size: { width: «widd», height: «hei» },
-							    	    attrs: { rect: { fill: '#AD4F09', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«instance.name»', fill: 'white', 'font-size': 18, 'font-weight': 'bold' } }
-							    	});
-							    	
-							    	tabI['«instance.name»']= rect«x»
-							    	var link = new joint.dia.Link
-							    				    			({
-							    								 router: { name: 'manhattan' },
-							    				    			     source: { id: tab['«instance.name»'].id },
-							    				    			     target: { id: rect«x».id }
-							    				    			});
-							    	graph.addCells([tab['«instance.name»'], rect«x», link]);
-							    	«var y = x»
-							    	«xAxis = 100»
-							    	«yAxis = yAxis + 30»
-							    		«FOR instanceProp : instance.eAllContents.filter(NameProperty).toIterable»
-							    			«x = x+1»
-							    			var rect«x» = new joint.shapes.basic.Rect
-							    			({
-							    			        //position: { x: «xAxis», y: «yAxis» },
-											size: { width: «wid», height: «hei» },
-							    			        attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«instanceProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
-							    			});
-							    			var link = new joint.dia.Link
-							    			({
-											 router: { name: 'manhattan' },
-							    			     source: { id: rect«y».id },
-							    			     target: { id: rect«x».id }
-							    			});
-							    			graph.addCells([rect«y», rect«x», link]); 
-							    			«xAxis = xAxis+250»
-							    		«ENDFOR»
-							    		«FOR instanceProp : instance.eAllContents.filter(CountProperty).toIterable»
-							    			«x = x+1»
-							    			var rect«x» = new joint.shapes.basic.Rect
-							    			({
-							    			//position: { x: «xAxis», y: «yAxis» },
-											size: { width: «wid», height: «hei» },
-							    			         attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'count: «instanceProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
-							    			});
-							    			var link = new joint.dia.Link
-							    			({
-											 router: { name: 'manhattan' },
-							    			     source: { id: rect«y».id },
-							    			     target: { id: rect«x».id }
-							    			});
-							    			graph.addCells([rect«y», rect«x», link]);
-							    			«xAxis = xAxis+250»
-							    		«ENDFOR»
-							    		«FOR instanceProp : instance.eAllContents.filter(ChannelsProperty).toIterable»
-							    			«x = x+1»
-							    			var rect«x» = new joint.shapes.basic.Rect
-							    			({
-							    			//position: { x: «xAxis», y: «yAxis» },
-											size: { width: «wid», height: «hei» },
-							    			         attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«instanceProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
-							    			});
-							    			var link = new joint.dia.Link
-							    			({
-											 router: { name: 'manhattan' },
-							    			     source: { id: rect«y».id },
-							    			     target: { id: rect«x».id }
-							    			});
-							    			graph.addCells([rect«y», rect«x», link]);
-							    			«xAxis = xAxis+250»
-							    		«ENDFOR»
-							    		«FOR instanceProp : instance.eAllContents.filter(InstanceDataProperty).toIterable»
-							    			«x = x+1»
-							    			var rect«x» = new joint.shapes.basic.Rect
-							    			({
-							    			//position: { x: «xAxis», y: «yAxis» },
-											size: { width: «wid», height: «hei» },
-							    			         attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«instanceProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
-							    			});
-							    			var link = new joint.dia.Link
-							    			({
-											 router: { name: 'manhattan' },
-							    			     source: { id: rect«y».id },
-							    			     target: { id: rect«x».id }
-							    			});
-							    			graph.addCells([rect«y», rect«x», link]);
-							    			«xAxis = xAxis+250»
-							    		«ENDFOR»
-							    		«FOR instanceProp : instance.eAllContents.filter(InstanceStateProperty).toIterable»
-							    			«x = x+1»
-							    			var rect«x» = new joint.shapes.basic.Rect
-							    			({
-							    			//position: { x: «xAxis», y: «yAxis» },
-											size: { width: «wid», height: «hei» },
-							    			         attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«instanceProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
-							    			});
-							    			var link = new joint.dia.Link
-							    			({
-											 router: { name: 'manhattan' },
-							    			     source: { id: rect«y».id },
-							    			     target: { id: rect«x».id }
-							    			});
-							    			graph.addCells([rect«y», rect«x», link]);
-							    			«xAxis = xAxis+250»
-							    		«ENDFOR»
-							    		«FOR instanceProp : instance.eAllContents.filter(Instance).toIterable»
-							    			«x = x+1»
-							    			var rect«x» = new joint.shapes.basic.Rect
-							    			({
-							    			//position: { x: «xAxis», y: «yAxis» },
-											size: { width: «wid», height: «hei» },
-							    			         attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«instanceProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
-							    			});
-							    			var link = new joint.dia.Link
-							    			({
-											 router: { name: 'manhattan' },
-							    			     source: { id: rect«y».id },
-							    			     target: { id: rect«x».id }
-							    			});
-							    			graph.addCells([rect«y», rect«x», link]);
-							    			«xAxis = xAxis+250»
-							    			
-							    		«ENDFOR»
-									«posX = xAxis»
-									«posY = yAxis»
+									size: { width: «wid», height: «hei» },
+											attrs: { rect: { fill: '#9683EC', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«facetProp.name»', fill: 'white', 'font-size': 12, 'font-weight': 'bold' } }
+									});
+									var link = new joint.dia.Link
+									({
+									 router: { name: 'manhattan' },
+										 source: { id: rect«ini».id },
+										 target: { id: rect«x».id }
+									});
+									graph.addCells([rect«ini», rect«x», link]); 
+									new joint.ui.Tooltip({
+										target: 'g[model-id=' + rect«x».id + ']',
+										content: 'Top directed tooltip.',
+										top:  'g[model-id=' + rect«x».id + ']',
+									   direction: 'top',
+									});
+									«xAxis = xAxis+250»
 								«ENDFOR»
+								
+								«ini = x+1»
+								«FOR facetProp : facet.eAllContents.filter(ExportsVariable).toIterable»
+									«x = x+1»
+									if («x» == «ini») {
+										var rect«x» = new joint.shapes.basic.Rect
+										({
+										size: { width: «wid», height: «hei» },
+												attrs: { rect: { fill: '#9683EC', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ExportsVariable', fill: 'white', 'font-size': 12, 'font-weight': 'bold' } }
+										});
+										var link = new joint.dia.Link
+										({
+										 router: { name: 'manhattan' },
+											 source: { id: rect«y».id },
+											 target: { id: rect«x».id }
+										});
+										graph.addCells([rect«y», rect«x», link]); 
+										«x = x+1»
+									}
+									var rect«x» = new joint.shapes.basic.Rect
+									({
+									size: { width: «wid», height: «hei» },
+											 attrs: { rect: { fill: '#9683EC', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«facetProp.name»', fill: 'white', 'font-size': 12, 'font-weight': 'bold' } }
+									});
+									var link = new joint.dia.Link
+									({
+									 router: { name: 'manhattan' },
+										 source: { id: rect«ini».id },
+										 target: { id: rect«x».id }
+									});
+									graph.addCells([rect«ini», rect«x», link]);
+									if ('«facetProp.name»' == 'ip') {
+										new joint.ui.Tooltip({
+											target: 'g[model-id=' + rect«x».id + ']',
+											content: '«facetProp.name»',
+											top:  'g[model-id=' + rect«x».id + ']',
+											direction: 'top',
+										});
+									} else {
+										new joint.ui.Tooltip({
+											target: 'g[model-id=' + rect«x».id + ']',
+											content: '«facetProp.name» = '+'«facetProp.value»',
+											top:  'g[model-id=' + rect«x».id + ']',
+											 direction: 'top',
+										});
+										
+									}
+									«xAxis = xAxis+250»
+								«ENDFOR»
+							«posX = xAxis»
+							«posY = yAxis»
+						«ENDFOR»
 
-	joint.layout.DirectedGraph.layout(graph, {
-		 nodeSep: 50,
-		     edgeSep: 80,
-            //setLinkVertices: false,
-			rankDir: "LR"
-        });
+						«FOR compo : resource.getAllContents.filter(Component).toIterable»
+								«x = x+1»
+							var rect«x» = new joint.shapes.basic.Rect
+							({
+									size: { width: «widd», height: «hei» },
+								attrs: { rect: { fill: '#FF5E4D', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black'}, text: { text: '«compo.name»', fill: 'white', 'font-size': 18, 'font-weight': 'bold' } }
+							});
+							tab['«compo.name»']= rect«x»
+									var link = new joint.dia.Link
+									({
+									 router: { name: 'manhattan' },
+										 source: { id: rect00.id },
+										 target: { id: rect«x».id }
+									});
+									graph.addCells([rect00, rect«x», link]); 
+							«var y = x»
+							«xAxis = posX+250»
+							«yAxis = posY+100»
+							«var ini = x+1»
+								«FOR compoProp : compo.eAllContents.filter(InstallerProperty).toIterable»
+									«x = x+1»
+									if («x» == «ini») {
+										var rect«x» = new joint.shapes.basic.Rect
+										({
+										size: { width: «wid», height: «hei» },
+												attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'InstallerProperty', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+										});
+										var link = new joint.dia.Link
+										({
+										 router: { name: 'manhattan' },
+											 source: { id: rect«y».id },
+											 target: { id: rect«x».id }
+										});
+										graph.addCells([rect«y», rect«x», link]); 
+										«xAxis = xAxis+250»
+										«x = x+1»
+									}
+									var rect«x» = new joint.shapes.basic.Rect
+									({
+									size: { width: «wid», height: «hei» },
+											attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«compoProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+									});
+									var link = new joint.dia.Link
+									({
+									 router: { name: 'manhattan' },
+										 source: { id: rect«ini».id },
+										 target: { id: rect«x».id }
+									});
+									graph.addCells([rect«ini», rect«x», link]); 
+									«xAxis = xAxis+250»
+								«ENDFOR»
+								«ini = x+1»
+								«FOR compoProp : compo.eAllContents.filter(ChildrenProperty).toIterable»
+									«x = x+1»
+									if («x» == «ini») {
+										var rect«x» = new joint.shapes.basic.Rect
+										({
+										size: { width: «wid», height: «hei» },
+												attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ChildrenProperty', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+										});
+										var link = new joint.dia.Link
+										({
+										 router: { name: 'manhattan' },
+											 source: { id: rect«y».id },
+											 target: { id: rect«x».id }
+										});
+										graph.addCells([rect«y», rect«x», link]); 
+										«xAxis = xAxis+250»
+										«x = x+1»
+									}
+									var rect«x» = new joint.shapes.basic.Rect
+									({
+									size: { width: «wid», height: «hei» },
+											attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«compoProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+									});
+									var link = new joint.dia.Link
+									({
+									 router: { name: 'manhattan' },
+										 source: { id: rect«ini».id },
+										 target: { id: rect«x».id }
+									});
+									graph.addCells([rect«ini», rect«x», link]); 
+									«xAxis = xAxis+250»
+								«ENDFOR»
+								«ini = x+1»
+								«FOR compoProp : compo.eAllContents.filter(ExportsVariable).toIterable»
+									«x = x+1»
+									if («x» == «ini») {
+										var rect«x» = new joint.shapes.basic.Rect
+										({
+										size: { width: «wid», height: «hei» },
+												attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ExportsVariable', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+										});
+										var link = new joint.dia.Link
+										({
+										 router: { name: 'manhattan' },
+											 source: { id: rect«y».id },
+											 target: { id: rect«x».id }
+										});
+										graph.addCells([rect«y», rect«x», link]); 
+										«xAxis = xAxis+250»
+										«x = x+1»
+									}
+									var rect«x» = new joint.shapes.basic.Rect
+									({
+									size: { width: «wid», height: «hei» },
+											attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«compoProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+									});
+									var link = new joint.dia.Link
+									({
+									 router: { name: 'manhattan' },
+										 source: { id: rect«ini».id },
+										 target: { id: rect«x».id }
+									});
+									graph.addCells([rect«ini», rect«x», link]); 
+									«xAxis = xAxis+250»
+								«ENDFOR»
+								«ini = x+1»
+								«FOR compoProp : compo.eAllContents.filter(ImportsVariable).toIterable»
+									«x = x+1»
+									if («x» == «ini») {
+										var rect«x» = new joint.shapes.basic.Rect
+										({
+										size: { width: «wid», height: «hei» },
+											 attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ImportsVariable', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+										 });
+										var link = new joint.dia.Link
+										({
+										 router: { name: 'manhattan' },
+											 source: { id: rect«y».id },
+											 target: { id: rect«x».id }
+										});
+										graph.addCells([rect«y», rect«x», link]);
+										«xAxis = xAxis+250»
+										«x = x+1»
+									}
+									var rect«x» = new joint.shapes.basic.Rect
+									({
+									size: { width: «wid», height: «hei» },
+										 attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«compoProp.componentName»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+									 });
+									var link = new joint.dia.Link
+									({
+									 router: { name: 'manhattan' },
+										 source: { id: rect«ini».id },
+										 target: { id: rect«x».id }
+									});
+									graph.addCells([rect«ini», rect«x», link]);
+									«xAxis = xAxis+250»
+							«ENDFOR»
+							«ini = x+1»
+							«FOR compoProp : compo.eAllContents.filter(FacetProperties).toIterable»
+								«FOR compoPropp : compoProp.eAllContents.filter(ChildrenProperty).toIterable»
+								«x = x+1»
+								if («x» == «ini») {
+									var rect«x» = new joint.shapes.basic.Rect
+									({
+										size: { width: «wid», height: «hei» },
+												 attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ChildrenProperty', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+									});
+									var link = new joint.dia.Link
+									({
+										 router: { name: 'manhattan' },
+											source: { id: rect«y».id },
+											target: { id: rect«x».id }
+									});
+									graph.addCells([rect«y», rect«x», link]);
+									«xAxis = xAxis+250»
+									«x = x+1»
+									}
+									var rect«x» = new joint.shapes.basic.Rect
+									({
+										size: { width: «wid», height: «hei» },
+												 attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«compoPropp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+									});
+									var link = new joint.dia.Link
+									({
+										 router: { name: 'manhattan' },
+											source: { id: rect«ini».id },
+											target: { id: rect«x».id }
+									});
+									graph.addCells([rect«ini», rect«x», link]);
+									«xAxis = xAxis+250»
+								«ENDFOR»
+								«ini = x+1»
+								«FOR compoProppp : compoProp.eAllContents.filter(ExportsVariable).toIterable»
+								«x = x+1»
+								if («x» == «ini») {
+									var rect«x» = new joint.shapes.basic.Rect
+									({
+										size: { width: «wid», height: «hei» },
+												 attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ChildrenProperty', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+									});
+									var link = new joint.dia.Link
+									({
+										 router: { name: 'manhattan' },
+											source: { id: rect«y».id },
+											target: { id: rect«x».id }
+									});
+									graph.addCells([rect«y», rect«x», link]);
+									«xAxis = xAxis+250»
+									«x = x+1»
+									}
+									var rect«x» = new joint.shapes.basic.Rect
+									({
+										size: { width: «wid», height: «hei» },
+												 attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«compoProppp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+									});
+									var link = new joint.dia.Link
+									({
+										 router: { name: 'manhattan' },
+											source: { id: rect«ini».id },
+											target: { id: rect«x».id }
+									});
+									graph.addCells([rect«ini», rect«x», link]);
+									«xAxis = xAxis+250»
+								«ENDFOR»
+							«ENDFOR»
+							«ini = x+1»
+							«FOR compoProp : compo.eAllContents.filter(ExtendsProperty).toIterable»
+								«x = x+1»
+								if («x» == «ini») {
+									var rect«x» = new joint.shapes.basic.Rect
+									({
+										size: { width: «wid», height: «hei» },
+												  attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ExtendsProperty', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+											  });
+									var link = new joint.dia.Link
+									({
+										 router: { name: 'manhattan' },
+											source: { id: rect«y».id },
+									target: { id: rect«x».id }
+										 });
+									graph.addCells([rect«y», rect«x», link]);
+									«xAxis = xAxis+250»
+									«x = x+1»
+								}
+								var rect«x» = new joint.shapes.basic.Rect
+								({
+									size: { width: «wid», height: «hei» },
+											  attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«compoProp.extendsNames»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+										  });
+								var link = new joint.dia.Link
+								({
+									 router: { name: 'manhattan' },
+										source: { id: rect«ini».id },
+								target: { id: rect«x».id }
+									 });
+								graph.addCells([rect«ini», rect«x», link]);
+								«xAxis = xAxis+250»
+							«ENDFOR»
+							«posX = xAxis»
+							«posY = yAxis»
+						«ENDFOR»
+						«FOR instance : resource.getAllContents.filter(Instance).toIterable»
+											var rect«x» = new joint.shapes.basic.Rect
+											({
+												size: { width: «widd», height: «hei» },
+												attrs: { rect: { fill: '#AD4F09', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«instance.name»', fill: 'white', 'font-size': 18, 'font-weight': 'bold' } }
+											});
+											
+											tabI['«instance.name»']= rect«x»
+											var link = new joint.dia.Link
+																		({
+																		 router: { name: 'manhattan' },
+																			 source: { id: tab['«instance.name»'].id },
+																			 target: { id: rect«x».id }
+																		});
+											graph.addCells([tab['«instance.name»'], rect«x», link]);
+											«var y = x»
+											«xAxis = 100»
+											«yAxis = yAxis + 30»
+											«var ini = x+1»
+												«FOR instanceProp : instance.eAllContents.filter(NameProperty).toIterable»
+													«x = x+1»
+													if («x» == «ini») {
+														var rect«x» = new joint.shapes.basic.Rect
+														({
+														size: { width: «wid», height: «hei» },
+																attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'NameProperty', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+														});
+														var link = new joint.dia.Link
+														({
+														 router: { name: 'manhattan' },
+															 source: { id: rect«y».id },
+															 target: { id: rect«x».id }
+														});
+														graph.addCells([rect«y», rect«x», link]); 
+														«xAxis = xAxis+250»
+														«x = x+1»
+													}
+													var rect«x» = new joint.shapes.basic.Rect
+													({
+													size: { width: «wid», height: «hei» },
+															attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«instanceProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+													});
+													var link = new joint.dia.Link
+													({
+													 router: { name: 'manhattan' },
+														 source: { id: rect«ini».id },
+														 target: { id: rect«x».id }
+													});
+													graph.addCells([rect«ini», rect«x», link]); 
+													«xAxis = xAxis+250»
+												«ENDFOR»
+												«ini = x+1»
+												«FOR instanceProp : instance.eAllContents.filter(CountProperty).toIterable»
+													«x = x+1»
+													if («x» == «ini») {
+														var rect«x» = new joint.shapes.basic.Rect
+														({
+														size: { width: «wid», height: «hei» },
+																attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'CountProperty', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+														});
+														var link = new joint.dia.Link
+														({
+														 router: { name: 'manhattan' },
+															 source: { id: rect«y».id },
+															 target: { id: rect«x».id }
+														});
+														graph.addCells([rect«y», rect«x», link]); 
+														«xAxis = xAxis+250»
+														«x = x+1»
+													}
+													var rect«x» = new joint.shapes.basic.Rect
+													({
+													size: { width: «wid», height: «hei» },
+															attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«instanceProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+													});
+													var link = new joint.dia.Link
+													({
+													 router: { name: 'manhattan' },
+														 source: { id: rect«ini».id },
+														 target: { id: rect«x».id }
+													});
+													graph.addCells([rect«ini», rect«x», link]); 
+													«xAxis = xAxis+250»
+												«ENDFOR»
+												«ini = x+1»
+												«FOR instanceProp : instance.eAllContents.filter(ChannelsProperty).toIterable»
+													«x = x+1»
+													if («x» == «ini») {
+														var rect«x» = new joint.shapes.basic.Rect
+														({
+														size: { width: «wid», height: «hei» },
+																attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ChannelsProperty', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+														});
+														var link = new joint.dia.Link
+														({
+														 router: { name: 'manhattan' },
+															 source: { id: rect«y».id },
+															 target: { id: rect«x».id }
+														});
+														graph.addCells([rect«y», rect«x», link]); 
+														«xAxis = xAxis+250»
+														«x = x+1»
+													}
+													var rect«x» = new joint.shapes.basic.Rect
+													({
+													size: { width: «wid», height: «hei» },
+															attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«instanceProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+													});
+													var link = new joint.dia.Link
+													({
+													 router: { name: 'manhattan' },
+														 source: { id: rect«ini».id },
+														 target: { id: rect«x».id }
+													});
+													graph.addCells([rect«ini», rect«x», link]); 
+													«xAxis = xAxis+250»
+												«ENDFOR»
+												«ini = x+1»
+												«FOR instanceProp : instance.eAllContents.filter(InstanceDataProperty).toIterable»
+													«x = x+1»
+													if («x» == «ini») {
+														var rect«x» = new joint.shapes.basic.Rect
+														({
+														size: { width: «wid», height: «hei» },
+																attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'InstanceDataProperty', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+														});
+														var link = new joint.dia.Link
+														({
+														 router: { name: 'manhattan' },
+															 source: { id: rect«y».id },
+															 target: { id: rect«x».id }
+														});
+														graph.addCells([rect«y», rect«x», link]); 
+														«xAxis = xAxis+250»
+														«x = x+1»
+													}
+													var rect«x» = new joint.shapes.basic.Rect
+													({
+													size: { width: «wid», height: «hei» },
+															attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«instanceProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+													});
+													var link = new joint.dia.Link
+													({
+													 router: { name: 'manhattan' },
+														 source: { id: rect«ini».id },
+														 target: { id: rect«x».id }
+													});
+													graph.addCells([rect«ini», rect«x», link]); 
+													«xAxis = xAxis+250»
+												«ENDFOR»
+												«ini = x+1»
+												«FOR instanceProp : instance.eAllContents.filter(InstanceStateProperty).toIterable»
+												«x = x+1»
+												if («x» == «ini») {
+												var rect«x» = new joint.shapes.basic.Rect
+												({
+												size: { width: «wid», height: «hei» },
+														attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'InstanceStateProperty', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+												});
+												var link = new joint.dia.Link
+												({
+												 router: { name: 'manhattan' },
+													 source: { id: rect«y».id },
+													 target: { id: rect«x».id }
+												});
+												graph.addCells([rect«y», rect«x», link]); 
+												«xAxis = xAxis+250»
+												«x = x+1»
+												}
+												var rect«x» = new joint.shapes.basic.Rect
+												({
+												size: { width: «wid», height: «hei» },
+														attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«instanceProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+												});
+												var link = new joint.dia.Link
+												({
+												 router: { name: 'manhattan' },
+													 source: { id: rect«ini».id },
+													 target: { id: rect«x».id }
+												});
+												graph.addCells([rect«ini», rect«x», link]); 
+												«xAxis = xAxis+250»
+												«ENDFOR»
+												«ini = x+1»
+												«FOR instanceProp : instance.eAllContents.filter(Instance).toIterable»
+													«x = x+1»
+																if («x» == «ini») {
+																var rect«x» = new joint.shapes.basic.Rect
+																({
+																size: { width: «wid», height: «hei» },
+																		attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'Instance', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+																});
+																var link = new joint.dia.Link
+																({
+																 router: { name: 'manhattan' },
+																	 source: { id: rect«y».id },
+																	 target: { id: rect«x».id }
+																});
+																graph.addCells([rect«y», rect«x», link]); 
+																«xAxis = xAxis+250»
+																«x = x+1»
+																}
+																var rect«x» = new joint.shapes.basic.Rect
+																({
+																size: { width: «wid», height: «hei» },
+																		attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '«instanceProp.name»', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+																});
+																var link = new joint.dia.Link
+																({
+																 router: { name: 'manhattan' },
+																	 source: { id: rect«ini».id },
+																	 target: { id: rect«x».id }
+																});
+																graph.addCells([rect«ini», rect«x», link]); 
+																«xAxis = xAxis+250»
+													
+												«ENDFOR»
+											«posX = xAxis»
+											«posY = yAxis»
+										«ENDFOR»
 
-	//paperScroller.zoom(-0.2);
-	paperScroller.centerContent();
-				</script>
-				</body>
-				</html>
-			''')
-	}
+			joint.layout.DirectedGraph.layout(graph, {
+				 nodeSep: 50,
+					 edgeSep: 80,
+					//setLinkVertices: false,
+					rankDir: "LR"
+				});
+
+			//paperScroller.zoom(-0.2);
+			paperScroller.centerContent();
+						</script>
+						</body>
+						</html>
+					''')
+			}
 }
