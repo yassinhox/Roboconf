@@ -370,5 +370,26 @@ class MyDslValidator extends AbstractMyDslValidator
 		}
 	}
 
+	@Check(FAST)
+	def checkPortUsage(Graph g)
+	{
+		for(it : g.eAllContents.filter(ExportsProperty).toIterable)
+		{
+			var UDP = false;
+			var TCP = false;
+			for(itt : it.eAllContents.filter(ExportsVariable).toIterable)
+			{
+				if(itt.name.equals("tcpport"))
+					TCP = true;
+				if(itt.name.equals("udpport"))
+					UDP = true;
+			}
+			if(TCP == UDP && UDP == true)
+			{
+				error("a tcp and udp cannot be declared at same time", it, null);
+			}
+		}
+	}
+
 }
 
