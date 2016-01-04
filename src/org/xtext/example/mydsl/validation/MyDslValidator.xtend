@@ -377,5 +377,49 @@ def checkUndeclaredVariableInstance(Graph g)
 		}	
 	}
 	
+	@Check(FAST)
+	def checkUndeclaredComponentExtends(Graph g)
+	{
+		for (Component c : g.components)
+		{
+			for (OptionalComponentProperty ocp : c.properties.optionalProperties)
+			{
+				if (ocp.extendsProperty != null)
+				{
+					for (String en : ocp.extendsProperty.extendsNames)
+					{
+						val componentName = getComponentByName(g, en);
+						if (componentName == null)
+						{
+							error("component " + en + " does not exist", ocp.extendsProperty, null);
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	@Check(FAST)
+	def checkUndeclaredFacetExtends(Graph g)
+	{
+		for (Facet f : g.facets)
+		{
+			for (FacetProperty fp : f.properties.properties)
+			{
+				if (fp.extendsProperty != null)
+				{
+					for (String en : fp.extendsProperty.extendsNames)
+					{
+						val facetName = getFacetByName(g, en);
+						if (facetName == null)
+						{
+							error("facet " + en + " does not exist", fp.extendsProperty, null);
+						}
+					}
+				}
+			}
+		}
+	}
+	
 
 }
