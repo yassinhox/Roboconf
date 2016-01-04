@@ -3,7 +3,7 @@ grammar org.xtext.example.mydsl.MyDsl with org.eclipse.xtext.common.Terminals
 generate myDsl "http://www.xtext.org/example/mydsl/MyDsl"
 
 Graph:
-	(WS? ((comments += COMMENT) | (components += ComponentOrFacet) | (instances += Instance) | (imports += Import)))*
+	((comments += COMMENT) | (components += ComponentOrFacet) | (instances += Instance) | (imports += Import))*
 ;
 
 terminal COMMENT: 
@@ -31,24 +31,24 @@ ComponentOrFacet:
 ;
 
 Component:
-	(name = ID) WS? '{' (properties = ComponentProperties) '}'
+	(name = ID) '{' (properties = ComponentProperties) '}'
 ;
 
 Facet:
-	'facet' WS? (name = ID) WS? '{' (properties = FacetProperties) '}'
+	'facet' (name = ID) '{' (properties = FacetProperties) '}'
 ;
 
 Instance:
-	'instance of' WS? (name = ID) WS? '{' (properties = InstanceProperties) '}'
+	'instance of' (name = ID) '{' (properties = InstanceProperties) '}'
 ;
 
 Import:
-	'import' WS? (name = GRAPH_FILE) WS? ';'
+	'import' (name = GRAPH_FILE) ';'
 ;
 
 ComponentProperties:
-	(optionalProperties += OptionalComponentProperty)* WS?
-	(installerProperty = InstallerProperty) WS?
+	(optionalProperties += OptionalComponentProperty)*
+	(installerProperty = InstallerProperty)
 	(optionalProperties += OptionalComponentProperty)*
 ;
 
@@ -57,8 +57,8 @@ FacetProperties:
 ;
 
 InstanceProperties:
-	(optionalProperties += OptionalInstanceProperty)* WS?
-	(nameProperty = NameProperty) WS?
+	(optionalProperties += OptionalInstanceProperty)*
+	(nameProperty = NameProperty)
 	(optionalProperties += OptionalInstanceProperty)*
 ;
 
@@ -72,27 +72,27 @@ OptionalInstanceProperty:
 ;
 
 NameProperty:
-	WS? 'name:' WS? (name = ID) ';'
+	'name:' (name = ID) ';'
 ;
 
 CountProperty:
-	WS? 'count:' WS? (name = INT) WS? ';'	
+	'count:' (name = INT) ';'	
 ;
 
 ChannelsProperty:
-	WS? 'channels:' WS? (name = STRING) WS? ';'
+	'channels:' (name = STRING) ';'
 ;
 
 InstanceDataProperty:
-	WS? 'instance-data:' WS? (name = STRING) WS ';'
+	'instance-data:' (name = STRING) ';'
 ;
 
 InstanceStateProperty:
-	WS? 'instance-state:' WS? (name = STRING) WS ';'	
+	'instance-state:' (name = STRING) ';'	
 ;
 
 CompositionProperty:
-	WS? Instance
+	Instance
 ;
 
 FacetProperty:
@@ -111,36 +111,36 @@ OptionalComponentProperty:
 ;
 
 InstallerProperty:
-	WS? 'installer:' WS? (name = ID) WS? ';'
+	'installer:' (name = ID) ';'
 ;
 
 ChildrenProperty:
-	WS? 'children:' WS? (name += ID) WS? (',' WS? (name += ID))* WS? ';'
+	'children:' (name += ID) (',' (name += ID))* ';'
 ;
 
 ExportsProperty:
-	WS? 'exports:' WS? (exportsVariables += ExportsVariable) WS? (',' WS? (exportsVariables += ExportsVariable))* WS? ';'
+	'exports:' (exportsVariables += ExportsVariable) (',' (exportsVariables += ExportsVariable))* ';'
 ;
 
 ExportsVariable:
 	(name = 'ip') |
-	((name = ID) WS? '=' WS? (value = VARIABLEVALUE)) 
+	((name = ID) '=' (value = VARIABLEVALUE)) 
 ;
 
 ImportsProperty:
-	WS? 'imports:' WS? (importsVariables += ImportsVariable) WS? (',' WS? (importsVariables += ImportsVariable))* WS? ';'
+	'imports:' (importsVariables += ImportsVariable) (',' (importsVariables += ImportsVariable))* ';'
 ;
 
 ImportsVariable:
-	((isExternal ?= 'external') WS?)? (componentName = ID) '.' (componentProperty = ID | 'ip') (WS? (isOptional ?= '(optional)'))?
+	(isExternal ?= 'external')? (componentName = ID) '.' (componentProperty = ID | 'ip') ((isOptional ?= '(optional)'))?
 ;
 
 FacetsProperty:
-	WS? 'facets:' WS? (facetsNames += ID) WS? (',' WS? (facetsNames += ID))* WS? ';'
+	'facets:' (facetsNames += ID) (',' (facetsNames += ID))* ';'
 ;
 
 ExtendsProperty:
-	WS? 'extends:' WS? (extendsNames += ID) WS? (',' WS? (extendsNames += ID))* WS? ';'
+	'extends:' (extendsNames += ID) (',' (extendsNames += ID))* ';'
 ;
 
 
