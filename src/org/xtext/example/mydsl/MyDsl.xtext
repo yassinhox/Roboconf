@@ -3,11 +3,11 @@ grammar org.xtext.example.mydsl.MyDsl with org.eclipse.xtext.common.Terminals
 generate myDsl "http://www.xtext.org/example/mydsl/MyDsl"
 
 Graph:
-	((comments += COMMENT) | (components += ComponentOrFacet) | (instances += Instance) | (imports += Import))*
+	((components += Component) | (facets += Facet) | (instances += Instance) | (imports += Import))*
 ;
 
-terminal COMMENT: 
-	'#' !('\n' | '\r')* ('\r')? '\n'
+terminal SL_COMMENT: 
+	'#' !('\n' | '\r')* '\r'? '\n'
 ;
 
 terminal ID: 
@@ -24,10 +24,6 @@ IP:
 
 VARIABLEVALUE:
 	INT | STRING | IP
-;
-
-ComponentOrFacet:
-	(component = Component) | (facet = Facet)
 ;
 
 Component:
@@ -62,52 +58,25 @@ InstanceProperties:
 	(optionalProperties += OptionalInstanceProperty)*
 ;
 
-OptionalInstanceProperty:
-	COMMENT |
-	(countProperty = CountProperty) |
-	(channelsProperty = ChannelsProperty) |
-	(instanceDataProperty = InstanceDataProperty) |
-	(instanceStateProperty = InstanceStateProperty) |
-	(compositionProperty = CompositionProperty)
-;
-
-NameProperty:
-	'name:' (name = ID) ';'
-;
-
-CountProperty:
-	'count:' (name = INT) ';'	
-;
-
-ChannelsProperty:
-	'channels:' (name = STRING) ';'
-;
-
-InstanceDataProperty:
-	'instance-data:' (name = STRING) ';'
-;
-
-InstanceStateProperty:
-	'instance-state:' (name = STRING) ';'	
-;
-
-CompositionProperty:
-	Instance
-;
-
 FacetProperty:
-	COMMENT |
 	(childrenProperty = ChildrenProperty) | 
 	(exportsProperty = ExportsProperty)
 ;
 
 OptionalComponentProperty:
-	COMMENT |
 	(childrenProperty = ChildrenProperty) |
 	(exportsProperty = ExportsProperty) |
 	(importsProperty = ImportsProperty) |
 	(facetsProperty = FacetsProperty) |
 	(extendsProperty = ExtendsProperty)
+;
+
+OptionalInstanceProperty:
+	(countProperty = CountProperty) |
+	(channelsProperty = ChannelsProperty) |
+	(instanceDataProperty = InstanceDataProperty) |
+	(instanceStateProperty = InstanceStateProperty) |
+	(compositionProperty = CompositionProperty)
 ;
 
 InstallerProperty:
@@ -141,6 +110,30 @@ FacetsProperty:
 
 ExtendsProperty:
 	'extends:' (extendsNames += ID) (',' (extendsNames += ID))* ';'
+;
+
+NameProperty:
+	'name:' (name = ID) ';'
+;
+
+CountProperty:
+	'count:' (name = INT) ';'	
+;
+
+ChannelsProperty:
+	'channels:' (name = STRING) ';'
+;
+
+InstanceDataProperty:
+	'instance-data:' (name = STRING) ';'
+;
+
+InstanceStateProperty:
+	'instance-state:' (name = STRING) ';'	
+;
+
+CompositionProperty:
+	Instance
 ;
 
 

@@ -60,18 +60,16 @@ class MyDslValidator extends AbstractMyDslValidator {
 	def checkComponentUniqueName(Graph g)
 	{
 		val names = new HashSet<String>();
-		for (ComponentOrFacet c : g.components)
+		for (Component c : g.components)
 		{
-			if (c.component != null)
-			{
-				if (names.contains(c.component.name)) error("Component or Facet name must be unique", null);
-				names.add(c.component.name)
-			}
-			if (c.facet != null)
-			{
-				if (names.contains(c.facet.name)) error("Component or Facet name must be unique", null);
-				names.add(c.facet.name)
-			}
+			if (names.contains(c.name)) error("Component or Facet name must be unique", c.eContainingFeature);
+				names.add(c.name)
+	
+		}
+		for (Facet f : g.facets)
+		{
+			if (names.contains(f.name)) error("Component or Facet name must be unique", f.eContainingFeature);
+			names.add(f.name)	
 		}
 	}
 }
