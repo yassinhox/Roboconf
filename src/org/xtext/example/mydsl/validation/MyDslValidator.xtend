@@ -247,6 +247,63 @@ def checkUndeclaredExport(Graph g)
 // check toutes les variables d'instanceOf uniques LOIC
 // check instanceOf de component existant YASS
 // check les variables de instanceOf existent dans le component YASS
-// check imports (class et prop existent) LOIC
+// check imports (class et prop existent) LOIC (done)
 // check extend existent LOIC
+
+	def getComponentByName(Graph g, String componentName)
+	{
+		for (Component c : g.components)
+		{
+			if (c.name.equals(componentName)) return c;
+		}
+		return null;
+	}
+	
+	def isComponentExportVariableExists(Component c, String exportVariableName)
+	{
+		for (OptionalComponentProperty ocp : c.properties.optionalProperties)
+		{
+			if (ocp.exportsProperty != null)
+			{
+				for (ExportsVariable v : ocp.exportsProperty.exportsVariables)
+				{
+					if (v.name.equals(exportVariableName))
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	@Check(FAST)
+	def checkValidImportsProperty(Graph g)
+	{
+		for (Component c : g.components)
+		{
+			for (OptionalComponentProperty ocp : c.properties.optionalProperties)
+			{
+				if (ocp.importsProperty != null)
+				{
+					for (ImportsVariable v : ocp.importsProperty.importsVariables)
+					{
+						if (!v.isIsExternal)
+						{
+							var cc = getComponentByName(g, v.componentName);
+							if (cc == null)
+							{
+								error("component " + v.componentName + " does not exist", v, null);
+							}
+							if (!isComponentExportVariableExists(cc, v.componentProperty))
+							{
+								error("component " + cc.name + " does not export the variable " + v.componentProperty, v, null);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 }
