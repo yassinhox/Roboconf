@@ -306,4 +306,57 @@ def checkUndeclaredExport(Graph g)
 		}
 	}
 
+	@Check(FAST)
+def checkUniqueInstances(Graph g)
+{
+	var instanceNames = new ArrayList<String>; //Contiendra les noms des facets déclarés
+	for (i : g.eAllContents.filter(NameProperty).toIterable)
+	{
+		if(instanceNames.contains(i.name))
+		{
+			error(i.name+" declared twice in graph",i,null);
+		}
+		instanceNames.add(i.name);
+	}
+}
+
+@Check(FAST)
+def checkUndeclaredInstance(Graph g)
+{
+	for(c : g.eAllContents.filter(Component).toIterable)
+	{
+		if(!componentNames.contains(c.name))
+		{
+			componentNames.add(c.name);
+		}
+	}
+	for (i : g.eAllContents.filter(Instance).toIterable)
+	{
+		if(!componentNames.contains(i.name))
+		{
+			error(i.name+" undeclared",i,null);
+		}
+	}
+}
+
+@Check(FAST)
+def checkUndeclaredVariableInstance(Graph g)
+{
+
+	for(it : g.eAllContents.filter(Instance).toIterable)
+	{
+		var currCompo = getComponentByName(g,it.name);
+		System.out.println("Current instanceOf "+it.name);
+		for(itt : it.eAllContents.filter(ExportedVariablesProperty).toIterable)
+		{
+			System.out.println("Current variable "+itt.name);
+			if(!isComponentExportVariableExists(currCompo, itt.name))
+			{
+				error(itt.name+" undeclared in the component "+currCompo.name,itt,null);
+			}
+		}
+	}
+	
+}
+
 }
