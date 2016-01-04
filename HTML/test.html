@@ -1,62 +1,824 @@
-<!DOCTYPE html>
-<html>
-
-    <head>
-        <link rel="stylesheet" href="joint.css" />
-        <script type="text/javascript" src="jquery.min.js"></script>
-        <script type="text/javascript" src="lodash.min.js"></script>
-        <script type="text/javascript" src="backbone-min.js"></script>
-        <script type="text/javascript" src="joint.js"></script>
-    </head>
-
-    <body>
-      <div id="myholder"></div>
-      <script type="text/javascript">
-
-        var graph = new joint.dia.Graph;
-
-        var paper = new joint.dia.Paper
-        ({
-            el: $('#myholder'),
-            width: 1600,
-            height: 1600,
-            model: graph,
-            gridSize: 1
-        });
-      var rect0 = new joint.shapes.basic.Rect
-      ({
-          position: { x: 100, y: 30 },
-          size: { width: 100, height: 30 },
-          attrs: { rect: { fill: 'red' }, text: { text: 'Tata', fill: 'white' } }
-      });
-        1
-        var rect1 = new joint.shapes.basic.Rect
-        ({
-                position: { x: 100, y: 130 },
-                size: { width: 100, height: 30 },
-                attrs: { rect: { fill: 'blue' }, text: { text: 'toto', fill: 'white' } }
+        <!DOCTYPE html>
+        <html>
+        
+            <head>
+                <link rel="stylesheet" href="http://www.jointjs.com/downloads/joint.css" />
+                <script type="text/javascript" src="http://jointjs.com/js/vendor/jquery/jquery.min.js"></script>
+                <script type="text/javascript" src="http://jointjs.com/js/vendor/lodash/lodash.min.js"></script>
+                <script type="text/javascript" src="http://jointjs.com/js/vendor/backbone/backbone-min.js"></script>
+                <script type="text/javascript" src="http://www.jointjs.com/downloads/joint.js"></script>
+                <script type="text/javascript" src="http://jointjs.com/js/rappid/v1.7/rappid.min.js"></script>
+                <script type="text/javascript" src="http://jointjs.com/js/vendor/graphlib/dist/graphlib.core.js"></script>
+                <script type="text/javascript" src="http://jointjs.com/js/vendor/dagre/dist/dagre.core.js"></script>
+                <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jointjs/0.9.7/joint.layout.DirectedGraph.min.js"></script>
+                <link rel="stylesheet" type="text/css" href="joint.ui.tooltip.css" />
+                <script src="joint.ui.tooltip.js"></script>
+           <style>
+           table, td {
+               border: 1px solid black;
+           }
+           </style>
+            </head>
+        
+            <body>
+               
+               <table>
+                <tr>
+                    <td BGCOLOR="#74D0F1">_</td><td>Facet</td>
+                </tr>
+                <tr>
+                    <td BGCOLOR="#9683EC">_</td><td>Facet properties</td>
+               </tr>
+               <tr>
+                    <td BGCOLOR="#FF5E4D">_</td><td>Component</td>
+               </tr>
+               <tr>
+                    <td BGCOLOR="#FFCB60">_</td><td>Component properties</td>
+               </tr>
+               <tr>
+                    <td BGCOLOR="#AD4F09">_</td><td>Instance</td>
+               </tr>
+               <tr>
+                    <td BGCOLOR="#F88E55">_</td><td>Instances properties</td>
+               </tr>
+                                                 
+               </table>
+                 <div id="paper"></div>
+              <script type="text/javascript">
+        
+                var graph = new joint.dia.Graph;
+                
+                var tab = new Object()
+                var tabI = new Object()
+        
+                var paper = new joint.dia.Paper
+                ({
+                    //el: $('#myholder'),
+                    width: 1600,
+                    height: 1600,
+                    model: graph,
+                    gridSize: 1
+                });
+            var paperScroller = new joint.ui.PaperScroller({
+                paper: paper,
+                autoResizePaper: true
             });
-        var link = new joint.dia.Link
-        ({
-                source: { id: rect0.id },
-                target: { id: rect1.id }
+
+            paper.on('blank:pointerdown', paperScroller.startPanning);
+            paperScroller.$el.css({ width: '100%', height: '100%' }).appendTo('#paper');
+
+                var rect00 = new joint.shapes.basic.Rect
+                ({
+                    size: { width: 100, height: 30 },
+                    attrs: { rect: { fill: '#2C3E50', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, 
+                    text: { 
+                        text: 'Model', fill: 'white',
+                            'font-size': 18, 'font-weight': 'bold', 'font-variant': 'small-caps', 'text-transform': 'capitalize'
+                    } }
+                });
+
+            var rect0 = new joint.shapes.basic.Rect
+            ({
+                size: { width: 180, height: 30 },
+                attrs: { rect: { fill: '#74D0F1', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'potatoz', fill: 'white', 'font-size': 18, 'font-weight': 'bold' } }
             });
-        graph.addCells([rect0, rect1, link]); 
-        350
-        2
-        var rect2 = new joint.shapes.basic.Rect
-        ({
-                position: { x: 350, y: 130 },
-                size: { width: 100, height: 30 },
-                attrs: { rect: { fill: 'blue' }, text: { text: '[titi, tutu, trtr]', fill: 'white' } }
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect00.id },
+                         target: { id: rect0.id }
+                    });
+                    graph.addCells([rect00, rect0, link]); 
+            100
+            60
+                1
+                if (1 == 1) {
+                    var rect1 = new joint.shapes.basic.Rect
+                    ({
+                    size: { width: 260, height: 30 },
+                            attrs: { rect: { fill: '#9683EC', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ChildrenProperty', fill: 'white', 'font-size': 12, 'font-weight': 'bold' } }
+                    });
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect0.id },
+                         target: { id: rect1.id }
+                    });
+                    graph.addCells([rect0, rect1, link]); 
+                    2
+                }
+                var rect2 = new joint.shapes.basic.Rect
+                ({
+                size: { width: 260, height: 30 },
+                        attrs: { rect: { fill: '#9683EC', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '[tach]', fill: 'white', 'font-size': 12, 'font-weight': 'bold' } }
+                });
+                var link = new joint.dia.Link
+                ({
+                 router: { name: 'manhattan' },
+                     source: { id: rect1.id },
+                     target: { id: rect2.id }
+                });
+                graph.addCells([rect1, rect2, link]); 
+                new joint.ui.Tooltip({
+                    target: 'g[model-id=' + rect2.id + ']',
+                    content: 'Top directed tooltip.',
+                    top:  'g[model-id=' + rect2.id + ']',
+                   direction: 'top',
+                });
+                350
+                
+                3
+            350
+            60
+
+                3
+            var rect3 = new joint.shapes.basic.Rect
+            ({
+                    size: { width: 180, height: 30 },
+                attrs: { rect: { fill: '#FF5E4D', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black'}, text: { text: 'toto', fill: 'white', 'font-size': 18, 'font-weight': 'bold' } }
             });
-        var link = new joint.dia.Link
-        ({
-                source: { id: rect0.id },
-                target: { id: rect2.id }
+            tab['toto']= rect3
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect00.id },
+                         target: { id: rect3.id }
+                    });
+                    graph.addCells([rect00, rect3, link]); 
+            600
+            160
+                4
+                if (4 == 4) {
+                    var rect4 = new joint.shapes.basic.Rect
+                    ({
+                    size: { width: 260, height: 30 },
+                            attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'InstallerProperty', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                    });
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect3.id },
+                         target: { id: rect4.id }
+                    });
+                    graph.addCells([rect3, rect4, link]); 
+                    850
+                    5
+                }
+                var rect5 = new joint.shapes.basic.Rect
+                ({
+                size: { width: 260, height: 30 },
+                        attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'bison', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                });
+                var link = new joint.dia.Link
+                ({
+                 router: { name: 'manhattan' },
+                     source: { id: rect4.id },
+                     target: { id: rect5.id }
+                });
+                graph.addCells([rect4, rect5, link]); 
+                1100
+                6
+                6
+                6
+            6
+            6
+            1100
+            160
+                6
+            var rect6 = new joint.shapes.basic.Rect
+            ({
+                    size: { width: 180, height: 30 },
+                attrs: { rect: { fill: '#FF5E4D', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black'}, text: { text: 'tach', fill: 'white', 'font-size': 18, 'font-weight': 'bold' } }
             });
-        graph.addCells([rect0, rect2, link]);
-        600
+            tab['tach']= rect6
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect00.id },
+                         target: { id: rect6.id }
+                    });
+                    graph.addCells([rect00, rect6, link]); 
+            1350
+            260
+                7
+                if (7 == 7) {
+                    var rect7 = new joint.shapes.basic.Rect
+                    ({
+                    size: { width: 260, height: 30 },
+                            attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'InstallerProperty', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                    });
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect6.id },
+                         target: { id: rect7.id }
+                    });
+                    graph.addCells([rect6, rect7, link]); 
+                    1600
+                    8
+                }
+                var rect8 = new joint.shapes.basic.Rect
+                ({
+                size: { width: 260, height: 30 },
+                        attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'toto', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                });
+                var link = new joint.dia.Link
+                ({
+                 router: { name: 'manhattan' },
+                     source: { id: rect7.id },
+                     target: { id: rect8.id }
+                });
+                graph.addCells([rect7, rect8, link]); 
+                1850
+                9
+                9
+                if (9 == 9) {
+                    var rect9 = new joint.shapes.basic.Rect
+                    ({
+                    size: { width: 260, height: 30 },
+                            attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ChildrenProperty', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                    });
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect6.id },
+                         target: { id: rect9.id }
+                    });
+                    graph.addCells([rect6, rect9, link]); 
+                    2100
+                    10
+                }
+                var rect10 = new joint.shapes.basic.Rect
+                ({
+                size: { width: 260, height: 30 },
+                        attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: '[toto]', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                });
+                var link = new joint.dia.Link
+                ({
+                 router: { name: 'manhattan' },
+                     source: { id: rect9.id },
+                     target: { id: rect10.id }
+                });
+                graph.addCells([rect9, rect10, link]); 
+                2350
+                11
+                11
+                if (11 == 11) {
+                    var rect11 = new joint.shapes.basic.Rect
+                    ({
+                    size: { width: 260, height: 30 },
+                            attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ExportsVariable', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                    });
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect6.id },
+                         target: { id: rect11.id }
+                    });
+                    graph.addCells([rect6, rect11, link]); 
+                    2600
+                    12
+                }
+                var rect12 = new joint.shapes.basic.Rect
+                ({
+                size: { width: 260, height: 30 },
+                        attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ip', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                });
+                var link = new joint.dia.Link
+                ({
+                 router: { name: 'manhattan' },
+                     source: { id: rect11.id },
+                     target: { id: rect12.id }
+                });
+                graph.addCells([rect11, rect12, link]); 
+                2850
+                13
+                if (13 == 11) {
+                    var rect13 = new joint.shapes.basic.Rect
+                    ({
+                    size: { width: 260, height: 30 },
+                            attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ExportsVariable', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                    });
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect6.id },
+                         target: { id: rect13.id }
+                    });
+                    graph.addCells([rect6, rect13, link]); 
+                    3100
+                    14
+                }
+                var rect14 = new joint.shapes.basic.Rect
+                ({
+                size: { width: 260, height: 30 },
+                        attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'udpport', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                });
+                var link = new joint.dia.Link
+                ({
+                 router: { name: 'manhattan' },
+                     source: { id: rect11.id },
+                     target: { id: rect14.id }
+                });
+                graph.addCells([rect11, rect14, link]); 
+                3350
+                15
+                if (15 == 11) {
+                    var rect15 = new joint.shapes.basic.Rect
+                    ({
+                    size: { width: 260, height: 30 },
+                            attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ExportsVariable', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                    });
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect6.id },
+                         target: { id: rect15.id }
+                    });
+                    graph.addCells([rect6, rect15, link]); 
+                    3600
+                    16
+                }
+                var rect16 = new joint.shapes.basic.Rect
+                ({
+                size: { width: 260, height: 30 },
+                        attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'maxTimeOfDeployment', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                });
+                var link = new joint.dia.Link
+                ({
+                 router: { name: 'manhattan' },
+                     source: { id: rect11.id },
+                     target: { id: rect16.id }
+                });
+                graph.addCells([rect11, rect16, link]); 
+                3850
+                17
+                if (17 == 11) {
+                    var rect17 = new joint.shapes.basic.Rect
+                    ({
+                    size: { width: 260, height: 30 },
+                            attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ExportsVariable', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                    });
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect6.id },
+                         target: { id: rect17.id }
+                    });
+                    graph.addCells([rect6, rect17, link]); 
+                    4100
+                    18
+                }
+                var rect18 = new joint.shapes.basic.Rect
+                ({
+                size: { width: 260, height: 30 },
+                        attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'toto', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                });
+                var link = new joint.dia.Link
+                ({
+                 router: { name: 'manhattan' },
+                     source: { id: rect11.id },
+                     target: { id: rect18.id }
+                });
+                graph.addCells([rect11, rect18, link]); 
+                4350
+                19
+                if (19 == 11) {
+                    var rect19 = new joint.shapes.basic.Rect
+                    ({
+                    size: { width: 260, height: 30 },
+                            attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ExportsVariable', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                    });
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect6.id },
+                         target: { id: rect19.id }
+                    });
+                    graph.addCells([rect6, rect19, link]); 
+                    4600
+                    20
+                }
+                var rect20 = new joint.shapes.basic.Rect
+                ({
+                size: { width: 260, height: 30 },
+                        attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'maxPercentageCPU', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                });
+                var link = new joint.dia.Link
+                ({
+                 router: { name: 'manhattan' },
+                     source: { id: rect11.id },
+                     target: { id: rect20.id }
+                });
+                graph.addCells([rect11, rect20, link]); 
+                4850
+                21
+            21
+            21
+            4850
+            260
+                21
+            var rect21 = new joint.shapes.basic.Rect
+            ({
+                    size: { width: 180, height: 30 },
+                attrs: { rect: { fill: '#FF5E4D', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black'}, text: { text: 'Area', fill: 'white', 'font-size': 18, 'font-weight': 'bold' } }
+            });
+            tab['Area']= rect21
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect00.id },
+                         target: { id: rect21.id }
+                    });
+                    graph.addCells([rect00, rect21, link]); 
+            5100
+            360
+                22
+                if (22 == 22) {
+                    var rect22 = new joint.shapes.basic.Rect
+                    ({
+                    size: { width: 260, height: 30 },
+                            attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'InstallerProperty', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                    });
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect21.id },
+                         target: { id: rect22.id }
+                    });
+                    graph.addCells([rect21, rect22, link]); 
+                    5350
+                    23
+                }
+                var rect23 = new joint.shapes.basic.Rect
+                ({
+                size: { width: 260, height: 30 },
+                        attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'toto', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                });
+                var link = new joint.dia.Link
+                ({
+                 router: { name: 'manhattan' },
+                     source: { id: rect22.id },
+                     target: { id: rect23.id }
+                });
+                graph.addCells([rect22, rect23, link]); 
+                5600
+                24
+                24
+                24
+                if (24 == 24) {
+                    var rect24 = new joint.shapes.basic.Rect
+                    ({
+                    size: { width: 260, height: 30 },
+                            attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ExportsVariable', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                    });
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect21.id },
+                         target: { id: rect24.id }
+                    });
+                    graph.addCells([rect21, rect24, link]); 
+                    5850
+                    25
+                }
+                var rect25 = new joint.shapes.basic.Rect
+                ({
+                size: { width: 260, height: 30 },
+                        attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'port', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                });
+                var link = new joint.dia.Link
+                ({
+                 router: { name: 'manhattan' },
+                     source: { id: rect24.id },
+                     target: { id: rect25.id }
+                });
+                graph.addCells([rect24, rect25, link]); 
+                6100
+                26
+                if (26 == 24) {
+                    var rect26 = new joint.shapes.basic.Rect
+                    ({
+                    size: { width: 260, height: 30 },
+                            attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ExportsVariable', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                    });
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect21.id },
+                         target: { id: rect26.id }
+                    });
+                    graph.addCells([rect21, rect26, link]); 
+                    6350
+                    27
+                }
+                var rect27 = new joint.shapes.basic.Rect
+                ({
+                size: { width: 260, height: 30 },
+                        attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'toti', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                });
+                var link = new joint.dia.Link
+                ({
+                 router: { name: 'manhattan' },
+                     source: { id: rect24.id },
+                     target: { id: rect27.id }
+                });
+                graph.addCells([rect24, rect27, link]); 
+                6600
+                28
+                if (28 == 24) {
+                    var rect28 = new joint.shapes.basic.Rect
+                    ({
+                    size: { width: 260, height: 30 },
+                            attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ExportsVariable', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                    });
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect21.id },
+                         target: { id: rect28.id }
+                    });
+                    graph.addCells([rect21, rect28, link]); 
+                    6850
+                    29
+                }
+                var rect29 = new joint.shapes.basic.Rect
+                ({
+                size: { width: 260, height: 30 },
+                        attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'tres', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                });
+                var link = new joint.dia.Link
+                ({
+                 router: { name: 'manhattan' },
+                     source: { id: rect24.id },
+                     target: { id: rect29.id }
+                });
+                graph.addCells([rect24, rect29, link]); 
+                7100
+                30
+                if (30 == 24) {
+                    var rect30 = new joint.shapes.basic.Rect
+                    ({
+                    size: { width: 260, height: 30 },
+                            attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ExportsVariable', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                    });
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect21.id },
+                         target: { id: rect30.id }
+                    });
+                    graph.addCells([rect21, rect30, link]); 
+                    7350
+                    31
+                }
+                var rect31 = new joint.shapes.basic.Rect
+                ({
+                size: { width: 260, height: 30 },
+                        attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'toto', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                });
+                var link = new joint.dia.Link
+                ({
+                 router: { name: 'manhattan' },
+                     source: { id: rect24.id },
+                     target: { id: rect31.id }
+                });
+                graph.addCells([rect24, rect31, link]); 
+                7600
+                32
+                if (32 == 24) {
+                    var rect32 = new joint.shapes.basic.Rect
+                    ({
+                    size: { width: 260, height: 30 },
+                            attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ExportsVariable', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                    });
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect21.id },
+                         target: { id: rect32.id }
+                    });
+                    graph.addCells([rect21, rect32, link]); 
+                    7850
+                    33
+                }
+                var rect33 = new joint.shapes.basic.Rect
+                ({
+                size: { width: 260, height: 30 },
+                        attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'tcpport', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                });
+                var link = new joint.dia.Link
+                ({
+                 router: { name: 'manhattan' },
+                     source: { id: rect24.id },
+                     target: { id: rect33.id }
+                });
+                graph.addCells([rect24, rect33, link]); 
+                8100
+                34
+            34
+            34
+            8100
+            360
+                34
+            var rect34 = new joint.shapes.basic.Rect
+            ({
+                    size: { width: 180, height: 30 },
+                attrs: { rect: { fill: '#FF5E4D', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black'}, text: { text: 'Erea', fill: 'white', 'font-size': 18, 'font-weight': 'bold' } }
+            });
+            tab['Erea']= rect34
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect00.id },
+                         target: { id: rect34.id }
+                    });
+                    graph.addCells([rect00, rect34, link]); 
+            8350
+            460
+                35
+                if (35 == 35) {
+                    var rect35 = new joint.shapes.basic.Rect
+                    ({
+                    size: { width: 260, height: 30 },
+                            attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'InstallerProperty', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                    });
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect34.id },
+                         target: { id: rect35.id }
+                    });
+                    graph.addCells([rect34, rect35, link]); 
+                    8600
+                    36
+                }
+                var rect36 = new joint.shapes.basic.Rect
+                ({
+                size: { width: 260, height: 30 },
+                        attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'toto', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                });
+                var link = new joint.dia.Link
+                ({
+                 router: { name: 'manhattan' },
+                     source: { id: rect35.id },
+                     target: { id: rect36.id }
+                });
+                graph.addCells([rect35, rect36, link]); 
+                8850
+                37
+                37
+                37
+                if (37 == 37) {
+                    var rect37 = new joint.shapes.basic.Rect
+                    ({
+                    size: { width: 260, height: 30 },
+                            attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'ExportsVariable', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                    });
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect34.id },
+                         target: { id: rect37.id }
+                    });
+                    graph.addCells([rect34, rect37, link]); 
+                    9100
+                    38
+                }
+                var rect38 = new joint.shapes.basic.Rect
+                ({
+                size: { width: 260, height: 30 },
+                        attrs: { rect: { fill: '#FFCB60', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'udpport', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                });
+                var link = new joint.dia.Link
+                ({
+                 router: { name: 'manhattan' },
+                     source: { id: rect37.id },
+                     target: { id: rect38.id }
+                });
+                graph.addCells([rect37, rect38, link]); 
+                9350
+                39
+            39
+            39
+            9350
+            460
+            var rect38 = new joint.shapes.basic.Rect
+            ({
+                size: { width: 180, height: 30 },
+                attrs: { rect: { fill: '#AD4F09', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'Area', fill: 'white', 'font-size': 18, 'font-weight': 'bold' } }
+            });
+            
+            tabI['Area']= rect38
+            var link = new joint.dia.Link
+                                        ({
+                                         router: { name: 'manhattan' },
+                                             source: { id: tab['Area'].id },
+                                             target: { id: rect38.id }
+                                        });
+            graph.addCells([tab['Area'], rect38, link]);
+            100
+            490
+                39
+                if (39 == 39) {
+                    var rect39 = new joint.shapes.basic.Rect
+                    ({
+                    size: { width: 260, height: 30 },
+                            attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'NameProperty', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                    });
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect38.id },
+                         target: { id: rect39.id }
+                    });
+                    graph.addCells([rect38, rect39, link]); 
+                    350
+                    40
+                }
+                var rect40 = new joint.shapes.basic.Rect
+                ({
+                size: { width: 260, height: 30 },
+                        attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'tata', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                });
+                var link = new joint.dia.Link
+                ({
+                 router: { name: 'manhattan' },
+                     source: { id: rect39.id },
+                     target: { id: rect40.id }
+                });
+                graph.addCells([rect39, rect40, link]); 
+                600
+                41
+                41
+                41
+                41
+                41
+            600
+            490
+            var rect40 = new joint.shapes.basic.Rect
+            ({
+                size: { width: 180, height: 30 },
+                attrs: { rect: { fill: '#AD4F09', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'Erea', fill: 'white', 'font-size': 18, 'font-weight': 'bold' } }
+            });
+            
+            tabI['Erea']= rect40
+            var link = new joint.dia.Link
+                                        ({
+                                         router: { name: 'manhattan' },
+                                             source: { id: tab['Erea'].id },
+                                             target: { id: rect40.id }
+                                        });
+            graph.addCells([tab['Erea'], rect40, link]);
+            100
+            520
+                41
+                if (41 == 41) {
+                    var rect41 = new joint.shapes.basic.Rect
+                    ({
+                    size: { width: 260, height: 30 },
+                            attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'NameProperty', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                    });
+                    var link = new joint.dia.Link
+                    ({
+                     router: { name: 'manhattan' },
+                         source: { id: rect40.id },
+                         target: { id: rect41.id }
+                    });
+                    graph.addCells([rect40, rect41, link]); 
+                    350
+                    42
+                }
+                var rect42 = new joint.shapes.basic.Rect
+                ({
+                size: { width: 260, height: 30 },
+                        attrs: { rect: { fill: '#F88E55', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' }, text: { text: 'tatz', fill: 'black', 'font-size': 12, 'font-weight': 'bold' } }
+                });
+                var link = new joint.dia.Link
+                ({
+                 router: { name: 'manhattan' },
+                     source: { id: rect41.id },
+                     target: { id: rect42.id }
+                });
+                graph.addCells([rect41, rect42, link]); 
+                600
+                43
+                43
+                43
+                43
+                43
+            600
+            520
+
+joint.layout.DirectedGraph.layout(graph, {
+     nodeSep: 50,
+         edgeSep: 80,
+        //setLinkVertices: false,
+        rankDir: "LR"
+    });
+
+//paperScroller.zoom(-0.2);
+paperScroller.centerContent();
             </script>
-          </body>
-      </html>
+            </body>
+            </html>

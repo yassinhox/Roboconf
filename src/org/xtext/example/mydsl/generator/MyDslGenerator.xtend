@@ -7,31 +7,88 @@ import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
-import org.xtext.example.mydsl.air.ChildrenProperty
-import org.xtext.example.mydsl.air.Component
-import org.xtext.example.mydsl.air.ExportsVariable
-import org.xtext.example.mydsl.air.ExtendsProperty
-import org.xtext.example.mydsl.air.ImportsVariable
-import org.xtext.example.mydsl.air.InstallerProperty
-import org.xtext.example.mydsl.air.Facet
-import org.xtext.example.mydsl.air.ExportsProperty
-import org.xtext.example.mydsl.air.FacetProperties
-import org.xtext.example.mydsl.air.Instance
-import org.xtext.example.mydsl.air.NameProperty
-import org.xtext.example.mydsl.air.CountProperty
-import org.xtext.example.mydsl.air.ChannelsProperty
-import org.xtext.example.mydsl.air.InstanceDataProperty
-import org.xtext.example.mydsl.air.InstanceStateProperty
-import org.xtext.example.mydsl.air.CompositionProperty
+import org.xtext.example.mydsl.myDsl.*
+import java.util.Hashtable
 
 /**
  * Generates code from your model files on save.
  * 
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#code-generation
  */
-class AirGenerator extends AbstractGenerator {
+class MyDslGenerator extends AbstractGenerator {
+	def getComponentByName(Resource r, String componentName)
+	{
+		for (c : r.allContents.filter(Component).toIterable)
+		{
+			if (c.name.equals(componentName)) return c;
+		}
+		return null;
+	}
+	
+	def fileHashTableCompo(Resource resource, Instance instance, Hashtable h)
+	{
+		var c = getComponentByName(resource, instance.name);
+		System.out.println("Je récupère le compo "+c.name);
+		for(e : c.eAllContents.filter(ExportsVariable).toIterable)
+		{
+			h.put(e.name,e.value);	
+		}
+	}
+	
+	def aclGeneration(Resource resource)
+	{
+		var content = "";
+		var variable = new Hashtable();
+		
+		for (instance : resource.getAllContents.filter(Instance).toIterable)
+		{
+			System.out.println("Current instance "+instance.name);
+			fileHashTableCompo(resource, instance, variable);
+			for (extend : instance.eAllContents.filter(ExportedVariablesProperty).toIterable)
+			{
+				if(variable.containsKey(extend.name))
+				{
+					System.out.println("Je remplace "+extend.name);
+					variable.replace(extend.name, extend.value);
+				}
+				else
+				{
+					System.out.println("Je remplace rien");
+					variable.put(extend.name, extend.value);
+				}
+			}
+			var keys = variable.keySet();
+			var itr = keys.iterator();
+			var str = "";
+			while (itr.hasNext())
+			{
+				str = itr.next();
+				System.out.println("Key: "+str+" & value: "+variable.get(str));
+				if(str.equals("tcpport"))
+				{
+					content+="iptables -t filter -A OUTPUT --protocol tcp --destination-port "
+					+variable.get(str)+" --jump ACCEPT\n";
+					
+					content+="iptables -t filter -A INPUT --protocol tcp --destination-port "
+					+variable.get(str)+" --jump ACCEPT\n";
+				}
+				if(str.equals("udpport"))
+				{
+					content+="iptables -t filter -A OUTPUT --protocol udp --destination-port "
+					+variable.get(str)+" --jump ACCEPT\n";
+					
+					content+="iptables -t filter -A INPUT --protocol tcp --destination-port "
+					+variable.get(str)+" --jump ACCEPT\n";
+				}
+			} 
+		}
+		System.out.println("Content : "+content);
+		return content;
+	}
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
+	var content = aclGeneration(resource);
+	fsa.generateFile('IPTables.acl', content);
 	generateGraph(fsa, resource)
 		
 	}
