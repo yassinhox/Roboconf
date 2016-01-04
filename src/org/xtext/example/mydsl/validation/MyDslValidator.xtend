@@ -359,4 +359,23 @@ def checkUndeclaredVariableInstance(Graph g)
 	
 }
 
+	
+	@Check(FAST)
+	def checkInstanceOfVariableExists(Instance i)
+	{
+		val names = new HashSet<String>();
+		for (OptionalInstanceProperty ip : i.properties.optionalProperties)
+		{
+			if (ip.exportedVariablesProperty != null)
+			{
+				if (names.contains(ip.exportedVariablesProperty.name))
+				{
+					error("property defined more than once", ip.exportedVariablesProperty, null);
+				}
+				names.add(ip.exportedVariablesProperty.name);
+			}
+		}	
+	}
+	
+
 }
