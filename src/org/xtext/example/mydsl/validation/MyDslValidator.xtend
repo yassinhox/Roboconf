@@ -243,10 +243,10 @@ def checkUndeclaredExport(Graph g)
 	}
 }
 
-// check instanceOf name unique
-// check toutes les variables d'instanceOf uniques
-// check instanceOf de component existant 
-// check les variables de instanceOf existent dans le component
-// check imports (class et prop existent)
-// check extend existent
+// check instanceOf name unique YASS
+// check toutes les variables d'instanceOf uniques LOIC
+// check instanceOf de component existant YASS
+// check les variables de instanceOf existent dans le component YASS
+// check imports (class et prop existent) LOIC
+// check extend existent LOIC
 }
